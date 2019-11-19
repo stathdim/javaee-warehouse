@@ -1,4 +1,4 @@
-package ch.bbv.efstathiosdimitriadis.warehouse;
+package ch.bbv.efstathiosdimitriadis.rest;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
