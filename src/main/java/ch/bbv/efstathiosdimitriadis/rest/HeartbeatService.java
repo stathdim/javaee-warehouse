@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
  * Provides a simple heartbeat.
  *
  */
-@Path("/v1/heartbeat")
+@Path("v1/heartbeat")
 public class HeartbeatService {
 
     /**

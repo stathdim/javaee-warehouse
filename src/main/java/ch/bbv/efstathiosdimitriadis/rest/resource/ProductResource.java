@@ -2,13 +2,18 @@ package ch.bbv.efstathiosdimitriadis.rest.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 @Path("products")
 public class ProductResource {
-
+	
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProduct() {
-		return Response.ok().build();
+		Product product = new Product("tire", "car-accessory");
+		return Response.ok(product).build();
 	}
 }
