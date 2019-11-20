@@ -27,4 +27,6 @@ public class ProductServiceTest {
 		Product product = productService.getById(15); // need to set to out of bounds programmatically
 		assertEquals(null, product);
 	}
+	
+	
 }
