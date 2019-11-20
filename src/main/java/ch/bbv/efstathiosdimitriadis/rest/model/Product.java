@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 
-@XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class Product implements Serializable  {
 	/**
