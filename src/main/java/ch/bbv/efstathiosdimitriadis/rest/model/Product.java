@@ -1,8 +1,10 @@
 package ch.bbv.efstathiosdimitriadis.rest.model;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Product {
 	String name;
 	String category;
