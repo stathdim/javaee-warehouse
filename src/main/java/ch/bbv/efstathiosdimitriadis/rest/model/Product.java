@@ -2,6 +2,7 @@ package ch.bbv.efstathiosdimitriadis.rest.model;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,12 +10,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
-
-
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class Product implements Serializable  {
+public class Product implements Serializable {
 	/**
 	 * 
 	 */
@@ -24,7 +22,8 @@ public class Product implements Serializable  {
 	private String name;
 	@XmlElement
 	private String category;
-	private String id;
+	private int id;
+	private static AtomicInteger idGenerator = new AtomicInteger();
 
 	public Product() {
 	}
@@ -32,7 +31,7 @@ public class Product implements Serializable  {
 	public Product(String name, String category) {
 		this.name = name;
 		this.category = category;
-		this.id = UUID.randomUUID().toString();
+		id = idGenerator.getAndIncrement();
 	}
 
 	public String getName() {
@@ -43,7 +42,7 @@ public class Product implements Serializable  {
 		return category;
 	}
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -59,17 +58,15 @@ public class Product implements Serializable  {
 	public String toString() {
 		return name + " " + category;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!obj.getClass().isAssignableFrom(this.getClass()))
 			return false;
 		Product other = (Product) obj;
-		if (getCategory().equals(other.getCategory())
-				&& getName().equals(other.getName()))
+		if (getCategory().equals(other.getCategory()) && getName().equals(other.getName()))
 			return true;
 		return false;
 	}
-	
 
 }
