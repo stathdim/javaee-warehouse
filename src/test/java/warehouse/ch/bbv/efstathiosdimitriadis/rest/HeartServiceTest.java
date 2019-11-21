@@ -19,14 +19,14 @@ public class HeartServiceTest {
 	private static Dispatcher dispatcher;
 	private static HeartbeatService heartbeatService;
 	
-	@BeforeAll
+	@BeforeAll 
 	public static void globalSetup() {
 		dispatcher = MockDispatcherFactory.createDispatcher();
 		heartbeatService = new HeartbeatService();
 		dispatcher.getRegistry().addSingletonResource(heartbeatService);
 	}
 
-	@Test
+	@Test 
 	public void helloTest() throws Exception {
 		MockHttpResponse response = new MockHttpResponse();
 		MockHttpRequest request = MockHttpRequest.get("/v1/heartbeat");

@@ -22,8 +22,7 @@ public class Product implements Serializable {
 	private String name;
 	@XmlElement
 	private String category;
-	private int id;
-	private static AtomicInteger idGenerator = new AtomicInteger();
+	private String id;
 
 	public Product() {
 	}
@@ -31,7 +30,7 @@ public class Product implements Serializable {
 	public Product(String name, String category) {
 		this.name = name;
 		this.category = category;
-		id = idGenerator.getAndIncrement();
+		id = UUID.randomUUID().toString();
 	}
 
 	public String getName() {
@@ -42,7 +41,7 @@ public class Product implements Serializable {
 		return category;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
