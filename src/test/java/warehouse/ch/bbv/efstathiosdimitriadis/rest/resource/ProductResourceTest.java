@@ -3,7 +3,6 @@ package warehouse.ch.bbv.efstathiosdimitriadis.rest.resource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 
 import javax.ws.rs.core.MediaType;

@@ -1,12 +1,10 @@
 package warehouse.ch.bbv.efstathiosdimitriadis.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
 
@@ -22,8 +20,7 @@ public class ProductModelTest {
 		String.class.equals(product.getId().getClass());
 		try {
 			UUID.fromString(product.getId());
-			}
-		catch (Exception e) {
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}

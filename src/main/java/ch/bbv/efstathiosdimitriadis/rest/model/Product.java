@@ -2,7 +2,6 @@ package ch.bbv.efstathiosdimitriadis.rest.model;
 
 import java.io.Serializable;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -91,7 +91,7 @@ public class ProductServiceTest {
 	@Test
 	void createProductStoresProducts() {
 		Product product = new Product("Pigma Micron 03", "pen");
-		Optional<Product> createdProduct = productService.add(product);
+		productService.add(product);
 		
 		Optional<Product> storedProduct = productService.getById(product.getId());
 		assertTrue(storedProduct.isPresent());
