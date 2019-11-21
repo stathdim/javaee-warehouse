@@ -17,6 +17,10 @@ import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.service.ProductService;
 
 public class ProductServiceTest {
+	/*
+	 * The purpose of this testing class is not to have correct or well designed tests
+	 * but to get familiar with the TDD approach and the JUnit API
+	 */
 	ProductService productService;
 	
 	@BeforeEach
@@ -27,6 +31,8 @@ public class ProductServiceTest {
 	
 	@Test
 	void getProductByNameReturnsCorrectProduct() {
+		// we know that there is a tire Product in our dummy service
+		// this is data duplication of course so later we will change this 
 		String name = "tire";
 		List<Product> products = productService.getByName(name);
 		
@@ -54,9 +60,15 @@ public class ProductServiceTest {
 	}
 	
 	@Test
-	void getProductByIdNoExceptionIfNotContained() {
+	void getProductByNotExistingIdReturnsEmptyOptional() {
 		String randomUUID = UUID.randomUUID().toString();
 		Optional<Product> product = productService.getById(randomUUID);
+		assertFalse(product.isPresent());
+	}
+	
+	@Test
+	void getProductByInvalidIdReturnsEmptyOptional() {
+		Optional<Product> product = productService.getById("notUUID");
 		assertFalse(product.isPresent());
 	}
 	
@@ -84,5 +96,11 @@ public class ProductServiceTest {
 		Optional<Product> storedProduct = productService.getById(product.getId());
 		assertTrue(storedProduct.isPresent());
 		assertEquals(product, storedProduct.get());
+	}
+	
+	@Test
+	void createNullProductReturnsEmptyOptional() {
+		Optional<Product> createdProduct = productService.add(null);
+		assertFalse(createdProduct.isPresent());
 	}
 }
