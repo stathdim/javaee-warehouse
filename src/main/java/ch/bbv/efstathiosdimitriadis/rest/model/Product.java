@@ -62,7 +62,8 @@ public class Product implements Serializable {
 		if (!obj.getClass().isAssignableFrom(this.getClass()))
 			return false;
 		Product other = (Product) obj;
-		if (getCategory().equals(other.getCategory()) && getName().equals(other.getName()))
+		if (getCategory().equals(other.getCategory()) && getName().equals(other.getName())
+				&& getId().equals(other.getId()))
 			return true;
 		return false;
 	}

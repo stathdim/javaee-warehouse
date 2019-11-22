@@ -1,6 +1,7 @@
 package warehouse.ch.bbv.efstathiosdimitriadis.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.UUID;
@@ -24,4 +25,12 @@ public class ProductModelTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	@Test
+	void productsEqualsWithoutSameIdFalse() {
+		Product product = new Product("tomato", "fruit");
+		Product differentProduct = new Product("tomato", "fruit");
+		assertFalse(product.equals(differentProduct));
+	}
+
 }
