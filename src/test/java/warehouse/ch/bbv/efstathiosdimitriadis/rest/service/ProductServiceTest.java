@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
+import org.mockito.Mock;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.service.ProductService;
@@ -123,6 +124,11 @@ public class ProductServiceTest {
 	void removeProductReturnsEmptyOptionalIfNull() {
 		Optional<Product> removedProduct = productService.remove(null);
 		assertFalse(removedProduct.isPresent());
+	}
+	
+	@Test
+	void updateProductUpdatesTheProduct() {
+		Product product = productService.getAll().get(0);
 	}
 	
 }

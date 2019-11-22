@@ -10,13 +10,15 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 @ToString
 @EqualsAndHashCode
 @Value
@@ -24,21 +26,19 @@ public class Product implements Serializable {
 	/**
 	 * 
 	 */
-	@XmlAttribute
+
 	private static final long serialVersionUID = -2106525495814801955L;
-	@XmlElement
 	@Getter
 	private String name;
-	@XmlElement
 	@Getter
 	private String category;
-	@XmlTransient
 	@Getter
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private String id;
 
-	public Product(String name, String category) {
+	@JsonCreator
+	public Product(@JsonProperty("name") String name, @JsonProperty("category") String category) {
 		this.name = name;
 		this.category = category;
 		id = UUID.randomUUID().toString();
