@@ -8,9 +8,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.Value;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
+@ToString
+@EqualsAndHashCode
+@Value
 public class Product implements Serializable {
 	/**
 	 * 
@@ -18,13 +27,16 @@ public class Product implements Serializable {
 	@XmlAttribute
 	private static final long serialVersionUID = -2106525495814801955L;
 	@XmlElement
+	@Getter
 	private String name;
 	@XmlElement
+	@Getter
 	private String category;
+	@XmlTransient
+	@Getter
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
 	private String id;
-
-	public Product() {
-	}
 
 	public Product(String name, String category) {
 		this.name = name;
@@ -32,40 +44,12 @@ public class Product implements Serializable {
 		id = UUID.randomUUID().toString();
 	}
 
-	public String getName() {
-		return name;
+	public Product modifyName(String name) {
+		return new Product(name, category);
 	}
 
-	public String getCategory() {
-		return category;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	@Override
-	public String toString() {
-		return name + " " + category;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (!obj.getClass().isAssignableFrom(this.getClass()))
-			return false;
-		Product other = (Product) obj;
-		if (getCategory().equals(other.getCategory()) && getName().equals(other.getName())
-				&& getId().equals(other.getId()))
-			return true;
-		return false;
+	public Product modifyCategory(String category) {
+		return new Product(name, category);
 	}
 
 }
