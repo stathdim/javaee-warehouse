@@ -37,12 +37,16 @@ public class ProductService {
 	public List<Product> getByName(String name) {
 		return products.values().stream().filter((p) -> name.equals(p.getName())).collect(Collectors.toList());
 	}
-	
+
 	public Optional<Product> add(Product product) {
 		if (product == null)
 			return Optional.empty();
-		
+
 		products.put(product.getId(), product);
 		return Optional.of(products.get(product.getId()));
+	}
+
+	public Optional<Product> remove(String id) {
+		return Optional.ofNullable(products.remove(id));
 	}
 }
