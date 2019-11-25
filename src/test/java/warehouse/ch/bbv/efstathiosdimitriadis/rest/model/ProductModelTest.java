@@ -10,15 +10,16 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductModelTest {
 
 	@Test
 	void createProduct() throws NoSuchFieldException, SecurityException {
-		Product product = new Product("tomato", "fruit");
+		Product product = new Product("tomato", ProductCategory.FRUIT);
 		assertEquals("tomato", product.getName());
-		assertEquals("fruit", product.getCategory());
+		assertEquals(ProductCategory.FRUIT, product.getCategory());
 		String.class.equals(product.getId().getClass());
 		try {
 			UUID.fromString(product.getId());
@@ -29,8 +30,8 @@ public class ProductModelTest {
 
 	@Test
 	void productsWithSameFieldsAreEqual() {
-		Product product = new Product("tomato", "fruit");
-		Product differentProduct = new Product("tomato", "fruit");
+		Product product = new Product("tomato", ProductCategory.FRUIT);
+		Product differentProduct = new Product("tomato", ProductCategory.FRUIT);
 		assertTrue(product.equals(differentProduct));
 	}
 
@@ -38,37 +39,37 @@ public class ProductModelTest {
 	void modifyNameReturnsNewProductInstance() {
 		// Each instance has a unique ID courtesy of UUID so if the two
 		// products have different IDs then a new instance was created
-		Product product = new Product("falafel", "food");
+		Product product = new Product("falafel", ProductCategory.FOOD);
 		Product modifiendProduct = product.modifyName("pastitsio");
 		assertNotEquals(product.getId(), modifiendProduct.getId());
 	}
 
 	@Test
 	void modifyNameCorrectlyModifiesName() {
-		Product product = new Product("3", "455.33");
+		Product product = new Product("3", ProductCategory.GLASSWARE);
 		Product modifiedProduct = product.modifyName("4");
 		assertEquals("4", modifiedProduct.getName());
 	}
 
 	@Test
 	void modifyNameLeavesOriginalObjectUnmodified() {
-		Product product = new Product("Xiaomi Mi A1", "smartphone");
+		Product product = new Product("Xiaomi Mi A1", ProductCategory.SMARTPHONE);
 		product.modifyName("Samsung S10");
 		assertEquals("Xiaomi Mi A1", product.getName());
 	}
 
 	@Test
 	void modifyCategoryReturnsNewProductInstanceWithNewName() {
-		Product product = new Product("Xiaomi Mi A1", "smartphone");
-		Product modifiedProduct = product.modifyCategory("cellphone");
-		assertEquals("cellphone", modifiedProduct.getCategory());
+		Product product = new Product("Xiaomi Mi A1", ProductCategory.TABLET);
+		Product modifiedProduct = product.modifyCategory(ProductCategory.SMARTPHONE);
+		assertEquals(ProductCategory.SMARTPHONE, modifiedProduct.getCategory());
 		assertNotEquals(product.getId(), modifiedProduct.getId());
 	}
 
 	@Test
 	void modifyCategoryLeavesOriginalObjectUnmodified() {
-		Product product = new Product("Xiaomi Mi A1", "smartphone");
-		product.modifyCategory("cellphone");
-		assertEquals("smartphone", product.getCategory());
+		Product product = new Product("Xiaomi Mi A1", ProductCategory.TABLET);
+		product.modifyCategory(ProductCategory.SMARTPHONE);
+		assertEquals(ProductCategory.TABLET, product.getCategory());
 	}
 }

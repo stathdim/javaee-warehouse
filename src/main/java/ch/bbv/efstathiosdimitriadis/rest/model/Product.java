@@ -23,14 +23,14 @@ public class Product implements Serializable {
 	@Getter
 	private String name;
 	@Getter
-	private String category;
+	private ProductCategory category;
 	@Getter
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private String id;
 
 	@JsonCreator
-	public Product(@JsonProperty("name") String name, @JsonProperty("category") String category) {
+	public Product(@JsonProperty("name") String name, @JsonProperty("category") ProductCategory category) {
 		this.name = name;
 		this.category = category;
 		id = UUID.randomUUID().toString();
@@ -40,7 +40,7 @@ public class Product implements Serializable {
 		return new Product(name, category);
 	}
 
-	public Product modifyCategory(String category) {
+	public Product modifyCategory(ProductCategory category) {
 		return new Product(name, category);
 	}
 

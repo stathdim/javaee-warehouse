@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.service.ProductService;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +52,7 @@ public class ProductServiceTest {
 
 	@Test
 	void getByIdReturns200IfFound() {
-		Product mockProduct = new Product("", "");
+		Product mockProduct = new Product("", ProductCategory.GLASSWARE);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
 
 		Response resp = productService.getById(testingUUID);
@@ -61,7 +62,7 @@ public class ProductServiceTest {
 
 	@Test
 	void getByIdReturnsProduct() {
-		Product mockProduct = new Product("Dell G3", "laptop");
+		Product mockProduct = new Product("Dell G3", ProductCategory.LAPTOP);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
 
 		Response resp = productService.getById(testingUUID);
@@ -72,7 +73,7 @@ public class ProductServiceTest {
 
 	@Test
 	void getByIdDoesNotCreateNewObject() {
-		Product mockProduct = new Product("", "");
+		Product mockProduct = new Product("", ProductCategory.CLOTHES);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
 		Response resp = productService.getById(testingUUID);
 		Product returnedProduct = (Product) resp.getEntity();
@@ -97,8 +98,8 @@ public class ProductServiceTest {
 	@Test
 	void getAllReturns200() {
 		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", "a"));
-		mockProducts.add(new Product("b", "b"));
+		mockProducts.add(new Product("a", ProductCategory.CAR));
+		mockProducts.add(new Product("b", ProductCategory.FOOD));
 
 		Mockito.doReturn(mockProducts).when(mockDb).getAll();
 		Response resp = productService.getAll();
@@ -108,8 +109,8 @@ public class ProductServiceTest {
 	@Test
 	void getAllReturnsProducts() {
 		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", "a"));
-		mockProducts.add(new Product("b", "b"));
+		mockProducts.add(new Product("a", ProductCategory.CAR));
+		mockProducts.add(new Product("b", ProductCategory.FOOD));
 
 		Mockito.doReturn(mockProducts).when(mockDb).getAll();
 		Response resp = productService.getAll();
@@ -129,7 +130,7 @@ public class ProductServiceTest {
 	@Test
 	void getByNameReturns200IfFound() {
 		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", "a"));
+		mockProducts.add(new Product("a", ProductCategory.FURNITURE));
 		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
 
 		Response resp = productService.getByName("");
@@ -139,8 +140,8 @@ public class ProductServiceTest {
 	@Test
 	void getByNameReturnsProducts() {
 		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", "a"));
-		mockProducts.add(new Product("b", "b"));
+		mockProducts.add(new Product("a", ProductCategory.CAR));
+		mockProducts.add(new Product("b", ProductCategory.FOOD));
 		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
 		Response resp = productService.getByName("a");
 		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
@@ -158,7 +159,7 @@ public class ProductServiceTest {
 
 	@Test
 	void addReturnsCreatedIfSuccess() {
-		Product mockProduct = new Product("1", "2");
+		Product mockProduct = new Product("1", ProductCategory.FURNITURE);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
 		Response resp = productService.add(mockProduct);
 
@@ -168,13 +169,13 @@ public class ProductServiceTest {
 	@Test
 	void addReturns400IfNotCreated() {
 		Mockito.doReturn(Optional.empty()).when(mockDb).add(any());
-		Response resp = productService.add(new Product("", ""));
+		Response resp = productService.add(new Product("", ProductCategory.GLASSWARE));
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 	}
 
 	@Test
 	void addReturnsCorrectURIFormat() {
-		Product mockProduct = new Product("1", "2");
+		Product mockProduct = new Product("1", ProductCategory.GLASSWARE);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
 
 		Response resp = productService.add(mockProduct);
@@ -192,18 +193,18 @@ public class ProductServiceTest {
 
 	@Test
 	void removeReturns200IfDeleted() {
-		Mockito.doReturn(Optional.of(new Product("", ""))).when(mockDb).remove(any());
+		Mockito.doReturn(Optional.of(new Product("", ProductCategory.GLASSWARE))).when(mockDb).remove(any());
 		Response resp = productService.remove(testingUUID);
 		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void removeReturns404IfNotFound() {
 		Mockito.doReturn(Optional.empty()).when(mockDb).remove(any());
 		Response resp = productService.remove(testingUUID);
 		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void removeReturn400IfIdNotUUID() {
 		Response resp = productService.remove("kgaspmv");

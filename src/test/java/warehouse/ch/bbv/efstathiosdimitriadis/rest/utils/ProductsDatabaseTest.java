@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductsDatabaseTest {
@@ -74,7 +75,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void createProductReturnsTheProduct() {
-		Product product = new Product("Pigma Micron 03", "pen");
+		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
 		Optional<Product> createdProduct = database.add(product);
 
 		assertTrue(createdProduct.isPresent());
@@ -83,7 +84,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void createProductStoresProducts() {
-		Product product = new Product("Pigma Micron 03", "pen");
+		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
 		database.add(product);
 
 		Optional<Product> storedProduct = database.getById(product.getId());
@@ -99,7 +100,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void removeProductReturnsDeletedCopy() {
-		Product productForRemoval = new Product("Pigma Micron 03", "pen");
+		Product productForRemoval = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
 		database.add(productForRemoval);
 
 		Optional<Product> removedProduct = database.remove(productForRemoval.getId());
@@ -108,7 +109,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void removeProductReturnsEmptyOptionalIfNotFound() {
-		Product productForRemoval = new Product("Pigma Micron 08", "pen");
+		Product productForRemoval = new Product("Pigma Micron 08", ProductCategory.STATIONERY);
 		Optional<Product> removedProduct = database.remove(productForRemoval.getId());
 		assertFalse(removedProduct.isPresent());
 	}
@@ -121,8 +122,14 @@ public class ProductsDatabaseTest {
 	
 	@Test
 	void updateProductUpdatesTheProduct() {
-		Product product = new Product("Ferrari LaFerrari", "car");
+		Product product = new Product("Ferrari LaFerrari", ProductCategory.CAR);
 		database.add(product);
-		
-	}
+//		Right now we dont have any fields than can be modified in Product
+//		We consider that there can be products with the same name in different categories
+//		we should either make the Category field a List (maybe an enum of predefined categories)
+//		or add another field to make the update action meaningful 
+//		The best solution is the first as Product-Category is a Many-to-Many relationship
+//		Here we must also take into consideration the operation of retrieving all items of a category
+//		To do this we need to JOIN the products with the Categories field
+ 	}
 }

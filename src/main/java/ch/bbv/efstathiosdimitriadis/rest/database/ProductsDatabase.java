@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 import javax.ejb.Startup;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 
 @Singleton
 @Startup
@@ -19,11 +20,11 @@ public class ProductsDatabase {
 
 	public ProductsDatabase() {
 		products = new HashMap<>();
-		Product product = new Product("tire", "car-accessory");
+		Product product = new Product("tire", ProductCategory.CAR_ACCESSORY);
 		products.put(product.getId(), product);
-		product = new Product("beans", "vegetable");
+		product = new Product("beans", ProductCategory.VEGETABLE);
 		products.put(product.getId(), product);
-		product = new Product("A wise man's fear", "book");
+		product = new Product("A wise man's fear", ProductCategory.BOOK);
 		products.put(product.getId(), product);
 	}
 	

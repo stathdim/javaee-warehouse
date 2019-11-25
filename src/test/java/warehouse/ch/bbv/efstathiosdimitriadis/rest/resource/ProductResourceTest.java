@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 
@@ -40,7 +41,7 @@ public class ProductResourceTest {
 		MockHttpRequest request = MockHttpRequest.get("/products");
 		dispatcher.invoke(request, response);
 		Product actual = productFromJSON(response);
-		Product expected = new Product("tire", "car-accessory");
+		Product expected = new Product("tire",  ProductCategory.FRUIT);
 		assertEquals(expected, actual);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
@@ -48,7 +49,7 @@ public class ProductResourceTest {
 	@Test
 	public void postProductReturnsProductJSON()
 			throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
-		Product expected = new Product("cucumber", "vegetable");
+		Product expected = new Product("cucumber", ProductCategory.VEGETABLE);
 		ObjectMapper mapper = new ObjectMapper();
 		String payload = mapper.writeValueAsString(expected);
 

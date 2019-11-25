@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 
 @Path("products")
 public class ProductResource {
@@ -15,7 +16,7 @@ public class ProductResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProduct() {
-		Product product = new Product("tire", "car-accessory");
+		Product product = new Product("tire", ProductCategory.CAR_ACCESSORY);
 		return Response.ok(product).build();
 	}
 	
