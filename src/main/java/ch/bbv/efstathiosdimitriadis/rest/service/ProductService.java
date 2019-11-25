@@ -7,46 +7,39 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
+
+import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductService {
-	private static Map<String, Product> products;
+	@Inject ProductsDatabase db;
 
-	public ProductService() {
-		if (products == null) {
-			products = new HashMap<>();
-			Product product = new Product("tire", "car-accessory");
-			products.put(product.getId(), product);
-			product = new Product("beans", "vegetable");
-			products.put(product.getId(), product);
-			product = new Product("A wise man's fear", "book");
-			products.put(product.getId(), product);
-		}
-	}
-
-	public Optional<Product> getById(String id) {
-		return Optional.ofNullable(products.get(id));
+	public Response getById(String id) {
+		Optional<Product> product = db.getById(id);
+		if (product.isPresent())
+			return Response.ok().entity(product.get()).build();
+		else
+			return Response.status(Status.NOT_FOUND).build();
 	}
 
 	public List<Product> getAll() {
-		if (products.isEmpty())
-			return new ArrayList<Product>();
-		return new ArrayList<Product>(products.values());
+		return db.getAll();
 	}
-
+	
 	public List<Product> getByName(String name) {
-		return products.values().stream().filter((p) -> name.equals(p.getName())).collect(Collectors.toList());
+		return db.getByName(name);
 	}
 
 	public Optional<Product> add(Product product) {
-		if (product == null)
-			return Optional.empty();
-
-		products.put(product.getId(), product);
-		return Optional.of(products.get(product.getId()));
+		return db.add(product);
 	}
 
 	public Optional<Product> remove(String id) {
-		return Optional.ofNullable(products.remove(id));
+		return db.remove(id);
 	}
+	
 }
