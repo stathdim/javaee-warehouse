@@ -33,43 +33,62 @@ public class ProductServiceTest {
 	 * The purpose of this testing class is not to have correct or well designed
 	 * tests but to get familiar with the TDD approach and the JUnit API
 	 */
+	
+	String testingUUID;
 	@Mock
 	ProductsDatabase mockDb;
 
 	@InjectMocks
 	ProductService productService;
+	
+	@BeforeEach
+	void setup() {
+		testingUUID = UUID.randomUUID().toString();
+	}
 
 	@Test
-	void getProductByIdReturns200IfFound() {
+	void getByIdReturns200IfFound() {
 		Product mockProduct = new Product("", "");
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
 
-		Response resp = productService.getById("abc");
+		Response resp = productService.getById(testingUUID);
 
 		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
 	}
 
 	@Test
-	void getProductByIdReturnsProduct() {
+	void getByIdReturnsProduct() {
 		Product mockProduct = new Product("Dell G3", "laptop");
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
 
-		Response resp = productService.getById("");
+		Response resp = productService.getById(testingUUID);
 		Product returnedProduct = (Product) resp.getEntity();
 
 		assertEquals(mockProduct, returnedProduct);
 	}
 
 	@Test
-	void getProductByIdDoesNotCreateNewObject() {
+	void getByIdDoesNotCreateNewObject() {
 		Product mockProduct = new Product("", "");
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).getById(any());
-		Response resp = productService.getById("");
+		Response resp = productService.getById(testingUUID);
 		Product returnedProduct = (Product) resp.getEntity();
 
 		assertEquals(mockProduct.getId(), returnedProduct.getId());
 	}
+
+	@Test
+	void getByIdReturns404IfProductNotFound() {
+		Mockito.doReturn(Optional.empty()).when(mockDb).getById(any());
+
+		Response resp = productService.getById(testingUUID);
+		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+	}
 	
-	
+	@Test
+	void getByIdReturns400IfIdInvalid() {
+		Response resp = productService.getById("abc");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+	}
 
 }
