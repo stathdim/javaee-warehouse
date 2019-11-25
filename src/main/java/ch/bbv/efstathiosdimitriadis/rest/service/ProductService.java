@@ -72,7 +72,7 @@ public class ProductService {
 		return Response.ok().build();
 	}
 
-	private boolean notUUID(String id) {
+	private static boolean notUUID(String id) {
 		try {
 			UUID.fromString(id);
 		} catch (IllegalArgumentException e) {
