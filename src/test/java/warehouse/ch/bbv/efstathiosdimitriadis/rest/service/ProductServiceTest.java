@@ -2,6 +2,7 @@ package warehouse.ch.bbv.efstathiosdimitriadis.rest.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -154,5 +155,40 @@ public class ProductServiceTest {
 		Mockito.doReturn(new ArrayList<Product>()).when(mockDb).getByName(any());
 		Response resp = productService.getByName("");
 		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+	}
+
+	@Test
+	void addReturnsCreatedIfSuccess() {
+		Product mockProduct = new Product("1", "2");
+		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
+		Response resp = productService.add(mockProduct);
+
+		assertEquals(Status.CREATED.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void addReturns400IfNotCreated() {
+		Mockito.doReturn(Optional.empty()).when(mockDb).add(any());
+		Response resp = productService.add(new Product("", ""));
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+	}
+
+	@Test
+	void addReturnsCorrectURIFormat(TestReporter reporter) {
+		Product mockProduct = new Product("1", "2");
+		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
+		
+		Response resp = productService.add(mockProduct);
+		
+		assertNotEquals(null, resp.getHeaderString("Location"));
+		String[] productURI = resp.getHeaderString("Location").split("/");
+		assertEquals("products", productURI[0]);
+//		Second part must be a valid UUID
+		try {
+			UUID.fromString(productURI[1]);
+		} 
+		catch(Exception e) {
+			fail();
+		}
 	}
 }
