@@ -13,14 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductsDatabaseTest {
 	ProductsDatabase database;
-	
+
 	@BeforeEach
 	public void setup() {
 		database = new ProductsDatabase();
@@ -48,7 +47,7 @@ public class ProductsDatabaseTest {
 //		since UUIDs are globally unique
 		Product expectedProduct = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
 		database.add(expectedProduct);
-		
+
 		Optional<Product> productOptional = database.getById(expectedProduct.getId());
 		assertTrue(productOptional.isPresent());
 		Product product = productOptional.get();
@@ -94,7 +93,7 @@ public class ProductsDatabaseTest {
 		assertTrue(storedProduct.isPresent());
 		assertEquals(product, storedProduct.get());
 	}
-	
+
 	@Test
 	void createProductFailsIfNameExists() {
 		Product product = new Product("Pigma Micron 03", ProductCategory.CLOTHES);
@@ -125,31 +124,67 @@ public class ProductsDatabaseTest {
 		Optional<Product> removedProduct = database.remove(productForRemoval.getId());
 		assertFalse(removedProduct.isPresent());
 	}
-	
+
 	@Test
 	void removeProductReturnsEmptyOptionalIfNull() {
 		Optional<Product> removedProduct = database.remove(null);
 		assertFalse(removedProduct.isPresent());
 	}
-	
-	@Test @Disabled
+
+	@Test
+	void updateProductReturnsUpdatedOptionalProduct() {
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		database.add(originalProduct);
+		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
+
+		Optional<Product> returnedProduct = database.update(originalProduct.getName(), updatedProduct);
+
+		assertTrue(returnedProduct.isPresent());
+		assertEquals(updatedProduct, returnedProduct.get());
+	}
+
+	@Test
 	void updateProductUpdatesTheProduct() {
-		Product product = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
-		database.add(product);
-//		Right now we dont have any fields than can be modified in Product
-//		We consider that there can be products with the same name in different categories
-//		we should either make the Category field a List (maybe an enum of predefined categories)
-//		or add another field to make the update action meaningful 
-//		The best solution is the first as Product-Category is a Many-to-Many relationship
-//		Here we must also take into consideration the operation of retrieving all items of a category
-//		To do this we need to JOIN the products with the Categories field
-		Product updatedProduct = product.modifyCategory(ProductCategory.CAR);
-		
-//		database.update(product, updatedProduct);
-		
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		database.add(originalProduct);
+		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
+
+		database.update(originalProduct.getName(), updatedProduct);
+
 		Optional<Product> retrievedFromDb = database.getByName(updatedProduct.getName());
-		
+
 		assertTrue(retrievedFromDb.isPresent());
 		assertEquals(updatedProduct, retrievedFromDb.get());
- 	}
+	}
+
+	@Test
+	void updateProductReturnsEmptyOptionalIfNullUpdate() {
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		database.add(originalProduct);
+
+		Optional<Product> updated = database.update(originalProduct.getName(), null);
+		assertFalse(updated.isPresent());
+	}
+	
+	@Test
+	void updateProductLeavesProductUnchangedIfNullUpdate() {
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		database.add(originalProduct);
+
+		database.update(originalProduct.getName(), null);
+		
+		Optional<Product> retrievedFromDb = database.getByName(originalProduct.getName());
+		assertTrue(retrievedFromDb.isPresent());
+		assertEquals(originalProduct, retrievedFromDb.get());
+	}
+	
+	@Test
+	void updateProductReturnsEmptyOptionalIfNameNotExists() {
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		database.add(originalProduct);
+		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
+
+		Optional<Product> updated = database.update("Piaggio", updatedProduct);
+		assertFalse(updated.isPresent());
+	}
 }

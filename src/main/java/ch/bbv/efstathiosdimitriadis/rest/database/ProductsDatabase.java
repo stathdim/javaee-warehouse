@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 import javax.ejb.Startup;
@@ -57,4 +56,20 @@ public class ProductsDatabase {
 	public Optional<Product> remove(String id) {
 		return Optional.ofNullable(products.remove(id));
 	}
+
+	public Optional<Product> update(String name, Product update) {
+		if (update == null)
+			return Optional.empty();
+
+		Optional<Product> productToUpdate = getByName(name);
+		if (!productToUpdate.isPresent())
+			return Optional.empty();
+
+		String id = productToUpdate.get().getId();
+		// delete old entry from db
+		products.remove(id);
+
+		return add(update);
+	}
+
 }
