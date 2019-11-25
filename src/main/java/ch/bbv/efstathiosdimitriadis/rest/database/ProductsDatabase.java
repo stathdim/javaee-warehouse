@@ -27,28 +27,33 @@ public class ProductsDatabase {
 		product = new Product("A wise man's fear", ProductCategory.BOOK);
 		products.put(product.getId(), product);
 	}
-	
+
 	public Optional<Product> getById(String id) {
 		return Optional.ofNullable(products.get(id));
 	}
-	
+
 	public List<Product> getAll() {
 		if (products.isEmpty())
 			return new ArrayList<Product>();
 		return new ArrayList<Product>(products.values());
 	}
-	
+
 	public List<Product> getByName(String name) {
 		return products.values().stream().filter((p) -> name.equals(p.getName())).collect(Collectors.toList());
 	}
-	
+
 	public Optional<Product> add(Product product) {
 		if (product == null)
+			return Optional.empty();
+		String name = product.getName();
+		boolean nameExists = products.values().parallelStream().anyMatch((p) -> name.equals(p.getName()));
+
+		if (nameExists)
 			return Optional.empty();
 		products.put(product.getId(), product);
 		return Optional.of(products.get(product.getId()));
 	}
-	
+
 	public Optional<Product> remove(String id) {
 		return Optional.ofNullable(products.remove(id));
 	}

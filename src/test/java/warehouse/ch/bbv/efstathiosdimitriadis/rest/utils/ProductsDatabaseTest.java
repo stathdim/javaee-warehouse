@@ -91,6 +91,15 @@ public class ProductsDatabaseTest {
 		assertTrue(storedProduct.isPresent());
 		assertEquals(product, storedProduct.get());
 	}
+	
+	@Test
+	void createProductFailsIfNameExists() {
+		Product product = new Product("Pigma Micron 03", ProductCategory.CLOTHES);
+		database.add(product);
+		product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		Optional<Product> created = database.add(product);
+		assertFalse(created.isPresent());
+	}
 
 	@Test
 	void createNullProductReturnsEmptyOptional() {
