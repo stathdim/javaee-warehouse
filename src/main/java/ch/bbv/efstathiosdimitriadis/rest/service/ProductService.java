@@ -22,13 +22,13 @@ public class ProductService {
 	ProductsDatabase db;
 
 	public Response getById(String id) {
-		
+
 		try {
 			UUID.fromString(id);
 		} catch (IllegalArgumentException e) {
 			return Response.status(Status.BAD_REQUEST).entity("Invalid product ID").build();
 		}
-		
+
 		Optional<Product> product = db.getById(id);
 		if (product.isPresent())
 			return Response.ok().entity(product.get()).build();
@@ -40,12 +40,19 @@ public class ProductService {
 		List<Product> products = db.getAll();
 		if (products.size() == 0)
 			return Response.noContent().build();
-		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products){};
-        return Response.ok(genericProducts).build();
+		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products) {
+		};
+		return Response.ok(genericProducts).build();
 	}
 
-	public List<Product> getByName(String name) {
-		return db.getByName(name);
+	public Response getByName(String name) {
+		List<Product> products = db.getByName(name);
+		if (products.size() == 0)
+			return Response.status(Status.NOT_FOUND).build();
+		
+		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products) {
+		};
+		return Response.ok(genericProducts).build();
 	}
 
 	public Optional<Product> add(Product product) {

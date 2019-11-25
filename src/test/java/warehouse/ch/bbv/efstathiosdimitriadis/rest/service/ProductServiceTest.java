@@ -36,14 +36,14 @@ public class ProductServiceTest {
 	 * The purpose of this testing class is not to have correct or well designed
 	 * tests but to get familiar with the TDD approach and the JUnit API
 	 */
-	
+
 	String testingUUID;
 	@Mock
 	ProductsDatabase mockDb;
 
 	@InjectMocks
 	ProductService productService;
-	
+
 	@BeforeEach
 	void setup() {
 		testingUUID = UUID.randomUUID().toString();
@@ -87,30 +87,30 @@ public class ProductServiceTest {
 		Response resp = productService.getById(testingUUID);
 		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void getByIdReturns400IfIdInvalid() {
 		Response resp = productService.getById("abc");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void getAllReturns200() {
 		List<Product> mockProducts = new ArrayList<>();
 		mockProducts.add(new Product("a", "a"));
 		mockProducts.add(new Product("b", "b"));
-		
+
 		Mockito.doReturn(mockProducts).when(mockDb).getAll();
 		Response resp = productService.getAll();
 		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void getAllReturnsProducts() {
 		List<Product> mockProducts = new ArrayList<>();
 		mockProducts.add(new Product("a", "a"));
 		mockProducts.add(new Product("b", "b"));
-		
+
 		Mockito.doReturn(mockProducts).when(mockDb).getAll();
 		Response resp = productService.getAll();
 		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
@@ -118,7 +118,7 @@ public class ProductServiceTest {
 		assertEquals(mockProducts.get(0), returnedProducts.get(0));
 		assertEquals(mockProducts.get(1), returnedProducts.get(1));
 	}
-	
+
 	@Test
 	void getAllReturns204IfNoProducts() {
 		Mockito.doReturn(new ArrayList<Product>()).when(mockDb).getAll();
@@ -126,4 +126,33 @@ public class ProductServiceTest {
 		assertEquals(Status.NO_CONTENT.getStatusCode(), resp.getStatus());
 	}
 
+	@Test
+	void getByNameReturns200IfFound() {
+		List<Product> mockProducts = new ArrayList<>();
+		mockProducts.add(new Product("a", "a"));
+		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
+
+		Response resp = productService.getByName("");
+		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
+	}
+
+	@Test
+	void getByNameReturnsProducts() {
+		List<Product> mockProducts = new ArrayList<>();
+		mockProducts.add(new Product("a", "a"));
+		mockProducts.add(new Product("b", "b"));
+		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
+		Response resp = productService.getByName("a");
+		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
+		// with a JSON unmarshaller
+		assertEquals(mockProducts.get(0), returnedProducts.get(0));
+		assertEquals(mockProducts.get(1), returnedProducts.get(1));
+	}
+
+	@Test
+	void getByNameReturns404IfNoProducts() {
+		Mockito.doReturn(new ArrayList<Product>()).when(mockDb).getByName(any());
+		Response resp = productService.getByName("");
+		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+	}
 }
