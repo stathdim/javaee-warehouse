@@ -1,6 +1,5 @@
 package warehouse.ch.bbv.efstathiosdimitriadis.rest;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +8,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import ch.bbv.efstathiosdimitriadis.rest.HeartBean;
-import ch.bbv.efstathiosdimitriadis.rest.HeartbeatService;
+import ch.bbv.efstathiosdimitriadis.rest.resource.HeartbeatResource;
+import ch.bbv.efstathiosdimitriadis.rest.utils.HeartRate;
+import ch.bbv.efstathiosdimitriadis.rest.utils.Simple;
+import ch.bbv.efstathiosdimitriadis.rest.utils.SimpleHeartRate;
 
 import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockDispatcherFactory;
@@ -23,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class HeartServiceTest {
+public class SimpleHeartServiceTest {
 	private static Dispatcher dispatcher;
 	@Mock
-	HeartBean heartBeanMock;
+	SimpleHeartRate heartBeanMock;
 
 	@InjectMocks
-	HeartbeatService heartbeatService;
+	HeartbeatResource heartbeatService;
 
 	@BeforeEach
 	public void globalSetup() {
@@ -39,10 +40,18 @@ public class HeartServiceTest {
 	}
 
 	@Test
-	public void helloTest() throws Exception {
+	public void simpleHeartRateRouteReturns200Code() throws Exception {
 		MockHttpResponse response = new MockHttpResponse();
 		MockHttpRequest request = MockHttpRequest.get("/heartbeat");
 		dispatcher.invoke(request, response);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+	}
+	
+	@Test
+	public void simpleHeartRateRouteReturnsCorrectMessage() throws Exception {
+		MockHttpResponse response = new MockHttpResponse();
+		MockHttpRequest request = MockHttpRequest.get("/heartbeat");
+		dispatcher.invoke(request, response);
+		assertEquals("OK", response.getContentAsString());
 	}
 }
