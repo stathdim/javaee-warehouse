@@ -202,8 +202,45 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	void removeReturn400IfIdNotUUID() {
+	void removeReturns400IfIdNotUUID() {
 		Response resp = productService.remove("kgaspmv");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+	}
+
+	@Test
+	void updateReturns200IfUpdated() {
+		Product mockProduct = new Product("The Fellowship of the Ring", ProductCategory.BOOK);
+		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).update(any(), any());
+		
+		Response resp = productService.update("", new Product("The Fellowship of the Ring", ProductCategory.BOOK));
+		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
+	}
+
+	@Test
+	void updateReturnsUpdatedProduct() {
+		Product mockProduct = new Product("The Fellowship of the Ring", ProductCategory.BOOK);
+		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).update(any(), any());
+		Response resp = productService.update("", mockProduct);
+
+		Product returnedProduct = (Product) resp.getEntity();
+		assertEquals(mockProduct, returnedProduct);
+	}
+	
+	@Test
+	void updateReturns404IfNotFound() {
+		Mockito.doReturn(Optional.empty()).when(mockDb).update(any(), any());
+		Response resp = productService.update("", new Product("The Fellowship of the Ring", ProductCategory.BOOK));
+		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void updateReturnsNewProductURI() {
+		Product mockProduct = new Product("The Fellowship of the Ring", ProductCategory.BOOK);
+		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).update(any(), any());
+		Response resp = productService.update("", mockProduct);
+		String[] location = resp.getHeaderString("Location").split("/");
+		
+		assertEquals(mockProduct.getId(), location[1]);
+		
 	}
 }

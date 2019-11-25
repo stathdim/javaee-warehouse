@@ -72,6 +72,14 @@ public class ProductService {
 		return Response.ok().build();
 	}
 
+	public Response update(String name, Product update) {
+		Optional<Product> updatedProduct = db.update(name, update);
+		if (!updatedProduct.isPresent())
+			return Response.status(Status.NOT_FOUND).build();
+		URI createdURI = UriBuilder.fromResource(ProductResource.class).path(updatedProduct.get().getId()).build();
+		return Response.ok(updatedProduct.get()).location(createdURI).build();
+	}
+
 	private static boolean notUUID(String id) {
 		try {
 			UUID.fromString(id);
@@ -80,4 +88,5 @@ public class ProductService {
 		}
 		return false;
 	}
+
 }
