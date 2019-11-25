@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
@@ -30,27 +31,29 @@ public class ProductsDatabaseTest {
 		// we know that there is a tire Product in our dummy service
 		// this is data duplication of course so later we will change this
 		String name = "tire";
-		List<Product> products = database.getByName(name);
-		assertEquals(name, products.get(0).getName());
+		Optional<Product> product = database.getByName(name);
+		assertEquals(name, product.get().getName());
 	}
 
 	@Test
-	void getProductByNameReturnsEmptyListIfNotExist() {
+	void getProductByNameReturnsEmptyOptionalIfNotExist() {
 		String name = "Excalibur";
-		List<Product> products = database.getByName(name);
-		assertEquals(0, products.size());
+		Optional<Product> product = database.getByName(name);
+		assertFalse(product.isPresent());
 	}
 
 	@Test
 	void getProductByIdReturnsCorrectProduct() {
 //		 To get a product by it's id we must know it's id beforehand 
 //		since UUIDs are globally unique
-		Product namedProduct = database.getByName("tire").get(0);
-		Optional<Product> productOptional = database.getById(namedProduct.getId());
+		Product expectedProduct = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		database.add(expectedProduct);
+		
+		Optional<Product> productOptional = database.getById(expectedProduct.getId());
 		assertTrue(productOptional.isPresent());
 		Product product = productOptional.get();
 		assertEquals(Product.class, product.getClass());
-		assertEquals(namedProduct.getId(), product.getId());
+		assertEquals(expectedProduct.getId(), product.getId());
 	}
 
 	@Test
@@ -129,9 +132,9 @@ public class ProductsDatabaseTest {
 		assertFalse(removedProduct.isPresent());
 	}
 	
-	@Test
+	@Test @Disabled
 	void updateProductUpdatesTheProduct() {
-		Product product = new Product("Ferrari LaFerrari", ProductCategory.CAR);
+		Product product = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
 		database.add(product);
 //		Right now we dont have any fields than can be modified in Product
 //		We consider that there can be products with the same name in different categories
@@ -140,5 +143,13 @@ public class ProductsDatabaseTest {
 //		The best solution is the first as Product-Category is a Many-to-Many relationship
 //		Here we must also take into consideration the operation of retrieving all items of a category
 //		To do this we need to JOIN the products with the Categories field
+		Product updatedProduct = product.modifyCategory(ProductCategory.CAR);
+		
+//		database.update(product, updatedProduct);
+		
+		Optional<Product> retrievedFromDb = database.getByName(updatedProduct.getName());
+		
+		assertTrue(retrievedFromDb.isPresent());
+		assertEquals(updatedProduct, retrievedFromDb.get());
  	}
 }

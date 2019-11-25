@@ -38,8 +38,8 @@ public class ProductsDatabase {
 		return new ArrayList<Product>(products.values());
 	}
 
-	public List<Product> getByName(String name) {
-		return products.values().stream().filter((p) -> name.equals(p.getName())).collect(Collectors.toList());
+	public Optional<Product> getByName(String name) {
+		return products.values().stream().filter(p -> name.equals(p.getName())).findFirst();
 	}
 
 	public Optional<Product> add(Product product) {

@@ -129,30 +129,26 @@ public class ProductServiceTest {
 
 	@Test
 	void getByNameReturns200IfFound() {
-		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", ProductCategory.FURNITURE));
-		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
+		Optional<Product> mockProduct = Optional.of(new Product("a", ProductCategory.CAR));
+		Mockito.doReturn(mockProduct).when(mockDb).getByName(any());
 
 		Response resp = productService.getByName("");
 		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
 	}
 
 	@Test
-	void getByNameReturnsProducts() {
-		List<Product> mockProducts = new ArrayList<>();
-		mockProducts.add(new Product("a", ProductCategory.CAR));
-		mockProducts.add(new Product("b", ProductCategory.FOOD));
-		Mockito.doReturn(mockProducts).when(mockDb).getByName(any());
+	void getByNameReturnsProduct() {
+		Optional<Product> mockProduct = Optional.of(new Product("a", ProductCategory.CAR));
+		Mockito.doReturn(mockProduct).when(mockDb).getByName(any());
 		Response resp = productService.getByName("a");
-		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
+		Product returnedProduct = (Product) resp.getEntity(); // This probably should be replaced
 		// with a JSON unmarshaller
-		assertEquals(mockProducts.get(0), returnedProducts.get(0));
-		assertEquals(mockProducts.get(1), returnedProducts.get(1));
+		assertEquals(mockProduct.get(), returnedProduct);
 	}
 
 	@Test
 	void getByNameReturns404IfNoProducts() {
-		Mockito.doReturn(new ArrayList<Product>()).when(mockDb).getByName(any());
+		Mockito.doReturn(Optional.empty()).when(mockDb).getByName(any());
 		Response resp = productService.getByName("");
 		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
 	}

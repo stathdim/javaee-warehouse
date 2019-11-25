@@ -48,13 +48,10 @@ public class ProductService {
 	}
 
 	public Response getByName(String name) {
-		List<Product> products = db.getByName(name);
-		if (products.size() == 0)
+		Optional<Product> product = db.getByName(name);
+		if (!product.isPresent())
 			return Response.status(Status.NOT_FOUND).build();
-
-		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products) {
-		};
-		return Response.ok(genericProducts).build();
+		return Response.ok(product.get()).build();
 	}
 
 	public Response add(Product product) {
