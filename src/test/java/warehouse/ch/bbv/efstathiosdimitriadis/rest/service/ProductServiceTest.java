@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
@@ -89,6 +92,38 @@ public class ProductServiceTest {
 	void getByIdReturns400IfIdInvalid() {
 		Response resp = productService.getById("abc");
 		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void getAllReturns200() {
+		List<Product> mockProducts = new ArrayList<>();
+		mockProducts.add(new Product("a", "a"));
+		mockProducts.add(new Product("b", "b"));
+		
+		Mockito.doReturn(mockProducts).when(mockDb).getAll();
+		Response resp = productService.getAll();
+		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void getAllReturnsProducts() {
+		List<Product> mockProducts = new ArrayList<>();
+		mockProducts.add(new Product("a", "a"));
+		mockProducts.add(new Product("b", "b"));
+		
+		Mockito.doReturn(mockProducts).when(mockDb).getAll();
+		Response resp = productService.getAll();
+		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
+		// with a JSON unmarshaller
+		assertEquals(mockProducts.get(0), returnedProducts.get(0));
+		assertEquals(mockProducts.get(1), returnedProducts.get(1));
+	}
+	
+	@Test
+	void getAllReturns204IfNoProducts() {
+		Mockito.doReturn(new ArrayList<Product>()).when(mockDb).getAll();
+		Response resp = productService.getAll();
+		assertEquals(Status.NO_CONTENT.getStatusCode(), resp.getStatus());
 	}
 
 }

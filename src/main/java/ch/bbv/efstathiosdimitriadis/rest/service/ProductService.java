@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
@@ -35,8 +36,12 @@ public class ProductService {
 			return Response.status(Status.NOT_FOUND).build();
 	}
 
-	public List<Product> getAll() {
-		return db.getAll();
+	public Response getAll() {
+		List<Product> products = db.getAll();
+		if (products.size() == 0)
+			return Response.noContent().build();
+		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products){};
+        return Response.ok(genericProducts).build();
 	}
 
 	public List<Product> getByName(String name) {
