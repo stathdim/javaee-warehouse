@@ -9,14 +9,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductModelTest {
 
 	@Test
-	void createProduct(TestReporter testReporter) throws NoSuchFieldException, SecurityException {
+	void createProduct() throws NoSuchFieldException, SecurityException {
 		Product product = new Product("tomato", "fruit");
 		assertEquals("tomato", product.getName());
 		assertEquals("fruit", product.getCategory());

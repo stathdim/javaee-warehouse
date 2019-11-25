@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
+
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
@@ -22,15 +22,6 @@ public class ProductsDatabaseTest {
 	@BeforeEach
 	public void setup() {
 		database = new ProductsDatabase();
-	}
-	
-	@Test 
-	void temp(TestReporter testReporter) {
-		List<Product> products = database.getAll();
-		testReporter.publishEntry(products.size() + "");
-		products.stream()
-		.map(p -> p.toString())
-		.forEach(testReporter::publishEntry);
 	}
 
 	@Test
@@ -50,7 +41,7 @@ public class ProductsDatabaseTest {
 	}
 
 	@Test
-	void getProductByIdReturnsCorrectProduct(TestReporter reporter) {
+	void getProductByIdReturnsCorrectProduct() {
 //		 To get a product by it's id we must know it's id beforehand 
 //		since UUIDs are globally unique
 		Product namedProduct = database.getByName("tire").get(0);

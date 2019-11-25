@@ -10,7 +10,6 @@ import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,9 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.bbv.efstathiosdimitriadis.rest.resource.HeartbeatResource;
-import ch.bbv.efstathiosdimitriadis.rest.utils.Complex;
 import ch.bbv.efstathiosdimitriadis.rest.utils.ComplexHeartRate;
-import ch.bbv.efstathiosdimitriadis.rest.utils.HeartRate;
 
 @ExtendWith(MockitoExtension.class)
 public class ComplexHeartRateServiceTest {

@@ -17,7 +17,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -174,7 +173,7 @@ public class ProductServiceTest {
 	}
 
 	@Test
-	void addReturnsCorrectURIFormat(TestReporter reporter) {
+	void addReturnsCorrectURIFormat() {
 		Product mockProduct = new Product("1", "2");
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
 
