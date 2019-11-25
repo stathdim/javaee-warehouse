@@ -165,7 +165,7 @@ public class ProductServiceTest {
 
 		assertEquals(Status.CREATED.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void addReturns400IfNotCreated() {
 		Mockito.doReturn(Optional.empty()).when(mockDb).add(any());
@@ -177,18 +177,37 @@ public class ProductServiceTest {
 	void addReturnsCorrectURIFormat(TestReporter reporter) {
 		Product mockProduct = new Product("1", "2");
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).add(any());
-		
+
 		Response resp = productService.add(mockProduct);
-		
+
 		assertNotEquals(null, resp.getHeaderString("Location"));
 		String[] productURI = resp.getHeaderString("Location").split("/");
 		assertEquals("products", productURI[0]);
 //		Second part must be a valid UUID
 		try {
 			UUID.fromString(productURI[1]);
-		} 
-		catch(Exception e) {
+		} catch (Exception e) {
 			fail();
 		}
+	}
+
+	@Test
+	void removeReturns200IfDeleted() {
+		Mockito.doReturn(Optional.of(new Product("", ""))).when(mockDb).remove(any());
+		Response resp = productService.remove(testingUUID);
+		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void removeReturns404IfNotFound() {
+		Mockito.doReturn(Optional.empty()).when(mockDb).remove(any());
+		Response resp = productService.remove(testingUUID);
+		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
+	}
+	
+	@Test
+	void removeReturn400IfIdNotUUID() {
+		Response resp = productService.remove("kgaspmv");
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 	}
 }

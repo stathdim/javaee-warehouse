@@ -44,7 +44,6 @@ public class ProductsDatabase {
 	public Optional<Product> add(Product product) {
 		if (product == null)
 			return Optional.empty();
-
 		products.put(product.getId(), product);
 		return Optional.of(products.get(product.getId()));
 	}

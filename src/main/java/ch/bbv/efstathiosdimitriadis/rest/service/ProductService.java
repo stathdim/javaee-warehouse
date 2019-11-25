@@ -28,11 +28,8 @@ public class ProductService {
 
 	public Response getById(String id) {
 
-		try {
-			UUID.fromString(id);
-		} catch (IllegalArgumentException e) {
+		if (notUUID(id))
 			return Response.status(Status.BAD_REQUEST).entity("Invalid product ID").build();
-		}
 
 		Optional<Product> product = db.getById(id);
 		if (product.isPresent())
@@ -54,7 +51,7 @@ public class ProductService {
 		List<Product> products = db.getByName(name);
 		if (products.size() == 0)
 			return Response.status(Status.NOT_FOUND).build();
-		
+
 		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products) {
 		};
 		return Response.ok(genericProducts).build();
@@ -69,8 +66,21 @@ public class ProductService {
 		return Response.created(createdURI).build();
 	}
 
-	public Optional<Product> remove(String id) {
-		return db.remove(id);
+	public Response remove(String id) {
+		if (notUUID(id))
+			return Response.status(Status.BAD_REQUEST).entity("Invalid product ID").build();
+		Optional<Product> removed = db.remove(id);
+		if (!removed.isPresent())
+			return Response.status(Status.NOT_FOUND).build();
+		return Response.ok().build();
 	}
 
+	private boolean notUUID(String id) {
+		try {
+			UUID.fromString(id);
+		} catch (IllegalArgumentException e) {
+			return true;
+		}
+		return false;
+	}
 }
