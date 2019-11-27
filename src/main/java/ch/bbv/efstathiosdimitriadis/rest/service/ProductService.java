@@ -1,33 +1,36 @@
 package ch.bbv.efstathiosdimitriadis.rest.service;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
-
-import org.apache.http.client.utils.URIBuilder;
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 
+@Stateless
 public class ProductService {
-	@Inject
 	ProductsDatabase db;
 
-	public Response getById(String id) {
+	public ProductService() {
+		// TODO Auto-generated constructor stub
+	}
 
+	@Inject
+	public ProductService(ProductsDatabase db) {
+		super();
+		this.db = db;
+	}
+
+	public Response getById(String id) {
 		if (notUUID(id))
 			return Response.status(Status.BAD_REQUEST).entity("Invalid product ID").build();
 
