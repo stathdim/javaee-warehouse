@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Singleton;
-import javax.ejb.Startup;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Singleton;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 
 @Singleton
-@Startup
+@Lock(LockType.WRITE)
 public class ProductsDatabase {
 	private Map<String, Product> products;
 
