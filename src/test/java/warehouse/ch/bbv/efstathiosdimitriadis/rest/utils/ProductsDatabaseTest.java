@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
@@ -137,7 +136,7 @@ public class ProductsDatabaseTest {
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 
-		Optional<Product> returnedProduct = database.update(originalProduct.getName(), updatedProduct);
+		Optional<Product> returnedProduct = database.update(originalProduct.getId(), updatedProduct);
 
 		assertTrue(returnedProduct.isPresent());
 		assertEquals(updatedProduct, returnedProduct.get());
@@ -149,7 +148,7 @@ public class ProductsDatabaseTest {
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 
-		database.update(originalProduct.getName(), updatedProduct);
+		database.update(originalProduct.getId(), updatedProduct);
 
 		Optional<Product> retrievedFromDb = database.getByName(updatedProduct.getName());
 
@@ -162,7 +161,7 @@ public class ProductsDatabaseTest {
 		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
 		database.add(originalProduct);
 
-		Optional<Product> updated = database.update(originalProduct.getName(), null);
+		Optional<Product> updated = database.update(originalProduct.getId(), null);
 		assertFalse(updated.isPresent());
 	}
 	
@@ -171,7 +170,7 @@ public class ProductsDatabaseTest {
 		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
 		database.add(originalProduct);
 
-		database.update(originalProduct.getName(), null);
+		database.update(originalProduct.getId(), null);
 		
 		Optional<Product> retrievedFromDb = database.getByName(originalProduct.getName());
 		assertTrue(retrievedFromDb.isPresent());
@@ -179,12 +178,12 @@ public class ProductsDatabaseTest {
 	}
 	
 	@Test
-	void updateProductReturnsEmptyOptionalIfNameNotExists() {
+	void updateProductReturnsEmptyOptionalIfIdNotExists() {
 		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 
-		Optional<Product> updated = database.update("Piaggio", updatedProduct);
+		Optional<Product> updated = database.update(UUID.randomUUID().toString(), updatedProduct);
 		assertFalse(updated.isPresent());
 	}
 }

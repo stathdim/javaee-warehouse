@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
@@ -16,7 +16,7 @@ import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 
-@Stateless
+@RequestScoped
 public class ProductService {
 	ProductsDatabase db;
 
@@ -75,8 +75,8 @@ public class ProductService {
 		return Response.ok().build();
 	}
 
-	public Response update(String name, Product update) {
-		Optional<Product> updatedProduct = db.update(name, update);
+	public Response update(String id, Product update) {
+		Optional<Product> updatedProduct = db.update(id, update);
 		if (!updatedProduct.isPresent())
 			return Response.status(Status.NOT_FOUND).build();
 		URI createdURI = UriBuilder.fromResource(ProductResource.class).path(updatedProduct.get().getId()).build();

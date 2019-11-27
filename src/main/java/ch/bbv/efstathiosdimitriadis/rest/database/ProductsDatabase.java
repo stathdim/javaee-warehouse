@@ -58,16 +58,14 @@ public class ProductsDatabase {
 		return Optional.ofNullable(products.remove(id));
 	}
 
-	public Optional<Product> update(String name, Product update) {
+	public Optional<Product> update(String id, Product update) {
 		if (update == null)
 			return Optional.empty();
 
-		Optional<Product> productToUpdate = getByName(name);
+		Optional<Product> productToUpdate = getById(id);
 		if (!productToUpdate.isPresent())
 			return Optional.empty();
 
-		String id = productToUpdate.get().getId();
-		// delete old entry from db
 		products.remove(id);
 
 		return add(update);

@@ -24,8 +24,6 @@ import org.mockito.Mockito;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
@@ -114,6 +112,7 @@ public class ProductServiceTest {
 
 		Mockito.doReturn(mockProducts).when(mockDb).getAll();
 		Response resp = productService.getAll();
+		@SuppressWarnings("unchecked")
 		List<Product> returnedProducts = (List<Product>) resp.getEntity(); // This probably should be replaced
 		// with a JSON unmarshaller
 		assertEquals(mockProducts.get(0), returnedProducts.get(0));
@@ -211,7 +210,7 @@ public class ProductServiceTest {
 	void updateReturns200IfUpdated() {
 		Product mockProduct = new Product("The Fellowship of the Ring", ProductCategory.BOOK);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).update(any(), any());
-		
+
 		Response resp = productService.update("", new Product("The Fellowship of the Ring", ProductCategory.BOOK));
 		assertEquals(Status.OK.getStatusCode(), resp.getStatus());
 	}
@@ -225,22 +224,22 @@ public class ProductServiceTest {
 		Product returnedProduct = (Product) resp.getEntity();
 		assertEquals(mockProduct, returnedProduct);
 	}
-	
+
 	@Test
 	void updateReturns404IfNotFound() {
 		Mockito.doReturn(Optional.empty()).when(mockDb).update(any(), any());
 		Response resp = productService.update("", new Product("The Fellowship of the Ring", ProductCategory.BOOK));
 		assertEquals(Status.NOT_FOUND.getStatusCode(), resp.getStatus());
 	}
-	
+
 	@Test
 	void updateReturnsNewProductURI() {
 		Product mockProduct = new Product("The Fellowship of the Ring", ProductCategory.BOOK);
 		Mockito.doReturn(Optional.of(mockProduct)).when(mockDb).update(any(), any());
 		Response resp = productService.update("", mockProduct);
 		String[] location = resp.getHeaderString("Location").split("/");
-		
+
 		assertEquals(mockProduct.getId(), location[1]);
-		
+
 	}
 }
