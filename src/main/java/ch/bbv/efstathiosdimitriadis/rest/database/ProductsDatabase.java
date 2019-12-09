@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ejb.Lock;
@@ -39,22 +40,22 @@ public class ProductsDatabase {
 			return new ArrayList<Product>();
 		List<Product> results = new ArrayList<Product>(products.values());
 		if (filter.getCategory() != null)
-			results = getAllProductsForCategory(filter.getCategory());
+			results = getAllProductsForCategory(filter.getCategory(), results);
 		if (filter.getYear() > 0)
-			results = getAllProductsForYear(filter.getYear());
+			results = getAllProductsForYear(filter.getYear(), results);
 		return results;
 	}
-	
-	private List<Product> getAllProductsForCategory(String category) {
-		return products.values().stream()
-			.filter(p -> category.equals(p.getCategory().toString()))
-			.collect(Collectors.toList());
+
+	private List<Product> getAllProductsForCategory(String category, List<Product> filteredProducts) {
+		return productFilter(p -> category.equals(p.getCategory().toString()), filteredProducts);
 	}
-	
-	private List<Product> getAllProductsForYear(int year) {
-		return products.values().stream()
-				.filter(p -> year == p.getYear())
-				.collect(Collectors.toList());
+
+	private List<Product> getAllProductsForYear(int year, List<Product> filteredProducts) {
+		return productFilter(p -> year == p.getYear(), filteredProducts);
+	}
+
+	private List<Product> productFilter(Predicate<Product> p, List<Product> filteredProducts) {
+		return filteredProducts.stream().filter(p::test).collect(Collectors.toList());
 	}
 
 	public Optional<Product> getByName(String name) {

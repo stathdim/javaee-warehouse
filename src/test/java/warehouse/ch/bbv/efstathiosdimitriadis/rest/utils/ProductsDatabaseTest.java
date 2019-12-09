@@ -111,9 +111,27 @@ public class ProductsDatabaseTest {
 			assertEquals(p.getYear(), 1987);
 	}
 	
-	@Test @Disabled
+	@Test
 	void GetAllProductsFiltersByYearAndCategory() {
+		Product product = new Product("Pigma Micron 07 Black", ProductCategory.STATIONERY, 1987);
+		database.add(product);
+		product = new Product("Pigma Micron 09 Black", ProductCategory.STATIONERY, 2012);
+		database.add(product);
+		product = new Product("Spinach", ProductCategory.VEGETABLE, 1987);
+		database.add(product);
 		
+		ProductFilterBean filterBean = new ProductFilterBean();
+		filterBean.setYear(1987);
+		filterBean.setCategory(ProductCategory.STATIONERY.toString());
+		
+		List<Product> products = database.getAll(filterBean);
+		
+		if (products == null || products.size() == 0)
+			fail();
+		for (Product p: products) {
+			assertEquals(ProductCategory.STATIONERY, p.getCategory());
+			assertEquals(1987, p.getYear());
+		}
 	}
 
 	@Test
@@ -127,7 +145,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void createProductStoresProducts() {
-		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY.BOOK, 1923);
+		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY, 1923);
 		database.add(product);
 
 		Optional<Product> storedProduct = database.getById(product.getId());
