@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriBuilder;
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
+import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 
 @RequestScoped
 public class ProductService {
@@ -41,8 +42,8 @@ public class ProductService {
 			return Response.status(Status.NOT_FOUND).build();
 	}
 
-	public Response getAll() {
-		List<Product> products = db.getAll();
+	public Response getAll(ProductFilterBean filter) {
+		List<Product> products = db.getAll(filter);
 		if (products.size() == 0)
 			return Response.noContent().build();
 		GenericEntity<List<Product>> genericProducts = new GenericEntity<List<Product>>(products) {

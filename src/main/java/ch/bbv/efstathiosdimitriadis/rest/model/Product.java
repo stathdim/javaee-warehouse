@@ -25,23 +25,31 @@ public class Product implements Serializable {
 	@Getter
 	private ProductCategory category;
 	@Getter
+	private int year;
+	@Getter
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	private String id;
 
+
 	@JsonCreator
-	public Product(@JsonProperty("name") String name, @JsonProperty("category") ProductCategory category) {
+	public Product(@JsonProperty("name") String name, @JsonProperty("category") ProductCategory category, @JsonProperty("year") int year) {
 		this.name = name;
 		this.category = category;
 		id = UUID.randomUUID().toString();
+		this.year = year;
 	}
 
-	public Product modifyName(String name) {
-		return new Product(name, category);
+	public Product modifyName(String newName) {
+		return new Product(newName, category, year);
 	}
 
-	public Product modifyCategory(ProductCategory category) {
-		return new Product(name, category);
+	public Product modifyCategory(ProductCategory newCategory) {
+		return new Product(name, newCategory, year);
+	}
+	
+	public Product modifyYear(int newYear) {
+		return new Product(name, category, newYear);
 	}
 
 }

@@ -10,10 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
+import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductsDatabaseTest {
@@ -44,7 +46,7 @@ public class ProductsDatabaseTest {
 	void getProductByIdReturnsCorrectProduct() {
 //		 To get a product by it's id we must know it's id beforehand 
 //		since UUIDs are globally unique
-		Product expectedProduct = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		Product expectedProduct = new Product("Pigma Micron 03", ProductCategory.STATIONERY, 2017);
 		database.add(expectedProduct);
 
 		Optional<Product> productOptional = database.getById(expectedProduct.getId());
@@ -68,15 +70,55 @@ public class ProductsDatabaseTest {
 	}
 
 	@Test
+	void getAllProductsHasFilterParameter() {
+		ProductFilterBean filterBean = new ProductFilterBean();
+		List<Product> products = database.getAll(filterBean);
+	}
+	
+	@Test
 	void getAllProducts() {
-		List<Product> products = database.getAll();
+		ProductFilterBean filterBean = new ProductFilterBean();
+		List<Product> products = database.getAll(filterBean);
 		if (products == null)
 			fail();
+	}
+	
+	@Test
+	void getAllProductsFiltersByCategory() {
+		Product product = new Product("Pigma Micron 07 Black", ProductCategory.STATIONERY, 1411);
+		database.add(product);
+		
+		ProductFilterBean filterBean = new ProductFilterBean();
+		filterBean.setCategory(ProductCategory.STATIONERY.toString());
+		List<Product> products = database.getAll(filterBean);
+		if (products == null || products.size() == 0)
+			fail();
+		assertEquals(products.get(0).getCategory(), ProductCategory.STATIONERY);
+	}
+	
+	@Test
+	void getAllProductsFiltersByYear() {
+		Product product = new Product("Pigma Micron 07 Black", ProductCategory.STATIONERY, 1987);
+		database.add(product);
+		product = new Product("Pigma Micron 07 Red", ProductCategory.STATIONERY, 1987);
+		database.add(product);
+		ProductFilterBean filterBean = new ProductFilterBean();
+		filterBean.setYear(1987);
+		List<Product> products = database.getAll(filterBean);
+		if (products == null || products.size() == 0)
+			fail();
+		for (Product p: products) 
+			assertEquals(p.getYear(), 1987);
+	}
+	
+	@Test @Disabled
+	void GetAllProductsFiltersByYearAndCategory() {
+		
 	}
 
 	@Test
 	void createProductReturnsTheProduct() {
-		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY, 1999);
 		Optional<Product> createdProduct = database.add(product);
 
 		assertTrue(createdProduct.isPresent());
@@ -85,7 +127,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void createProductStoresProducts() {
-		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		Product product = new Product("Pigma Micron 03", ProductCategory.STATIONERY.BOOK, 1923);
 		database.add(product);
 
 		Optional<Product> storedProduct = database.getById(product.getId());
@@ -95,9 +137,9 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void createProductFailsIfNameExists() {
-		Product product = new Product("Pigma Micron 03", ProductCategory.CLOTHES);
+		Product product = new Product("Pigma Micron 03", ProductCategory.CLOTHES, 1742);
 		database.add(product);
-		product = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		product = new Product("Pigma Micron 03", ProductCategory.STATIONERY, 1654);
 		Optional<Product> created = database.add(product);
 		assertFalse(created.isPresent());
 	}
@@ -110,7 +152,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void removeProductReturnsDeletedCopy() {
-		Product productForRemoval = new Product("Pigma Micron 03", ProductCategory.STATIONERY);
+		Product productForRemoval = new Product("Pigma Micron 03", ProductCategory.STATIONERY, 4510);
 		database.add(productForRemoval);
 
 		Optional<Product> removedProduct = database.remove(productForRemoval.getId());
@@ -119,7 +161,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void removeProductReturnsEmptyOptionalIfNotFound() {
-		Product productForRemoval = new Product("Pigma Micron 08", ProductCategory.STATIONERY);
+		Product productForRemoval = new Product("Pigma Micron 08", ProductCategory.STATIONERY, 2000);
 		Optional<Product> removedProduct = database.remove(productForRemoval.getId());
 		assertFalse(removedProduct.isPresent());
 	}
@@ -132,7 +174,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void updateProductReturnsUpdatedOptionalProduct() {
-		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY, 2018);
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 
@@ -144,7 +186,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void updateProductUpdatesTheProduct() {
-		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY, 2019);
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 
@@ -158,7 +200,7 @@ public class ProductsDatabaseTest {
 
 	@Test
 	void updateProductReturnsEmptyOptionalIfNullUpdate() {
-		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY, 2017);
 		database.add(originalProduct);
 
 		Optional<Product> updated = database.update(originalProduct.getId(), null);
@@ -167,7 +209,7 @@ public class ProductsDatabaseTest {
 	
 	@Test
 	void updateProductLeavesProductUnchangedIfNullUpdate() {
-		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY, 2017);
 		database.add(originalProduct);
 
 		database.update(originalProduct.getId(), null);
@@ -179,7 +221,7 @@ public class ProductsDatabaseTest {
 	
 	@Test
 	void updateProductReturnsEmptyOptionalIfIdNotExists() {
-		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY);
+		Product originalProduct = new Product("Ferrari LaFerrari", ProductCategory.CAR_ACCESSORY, 2017);
 		database.add(originalProduct);
 		Product updatedProduct = originalProduct.modifyCategory(ProductCategory.CAR);
 

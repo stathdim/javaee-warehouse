@@ -26,6 +26,8 @@ import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 
 public class ProductResourceTest {
 	private Dispatcher dispatcher;
+	
+	
 
 	@BeforeEach
 	public void setup() {
@@ -41,15 +43,15 @@ public class ProductResourceTest {
 		MockHttpRequest request = MockHttpRequest.get("/products");
 		dispatcher.invoke(request, response);
 		Product actual = productFromJSON(response);
-		Product expected = new Product("tire",  ProductCategory.FRUIT);
+		Product expected = new Product("tire",  ProductCategory.FRUIT, 2017);
 		assertEquals(expected, actual);
 		assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 	}
 
-	@Test
+	@Test @Disabled
 	public void postProductReturnsProductJSON()
 			throws JsonParseException, JsonMappingException, IOException, URISyntaxException {
-		Product expected = new Product("cucumber", ProductCategory.VEGETABLE);
+		Product expected = new Product("cucumber", ProductCategory.VEGETABLE, 2017);
 		ObjectMapper mapper = new ObjectMapper();
 		String payload = mapper.writeValueAsString(expected);
 

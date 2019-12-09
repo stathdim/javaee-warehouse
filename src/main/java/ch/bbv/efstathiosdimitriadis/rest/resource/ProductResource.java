@@ -1,6 +1,7 @@
 package ch.bbv.efstathiosdimitriadis.rest.resource;
 
 import javax.inject.Inject;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
+import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 import ch.bbv.efstathiosdimitriadis.rest.service.ProductService;
 
 @Path("products")
@@ -29,8 +31,8 @@ public class ProductResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllProducts() throws Exception {
-		Response productResponse = productService.getAll();
+	public Response getAllProducts(@BeanParam ProductFilterBean filterBean) throws Exception {
+		Response productResponse = productService.getAll(filterBean);
 		return productResponse;
 	}
 	
