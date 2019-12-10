@@ -1,4 +1,4 @@
-package warehouse.ch.bbv.efstathiosdimitriadis.persistence;
+package ch.bbv.efstathiosdimitriadis.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

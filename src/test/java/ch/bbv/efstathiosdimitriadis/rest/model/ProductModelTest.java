@@ -1,4 +1,4 @@
-package warehouse.ch.bbv.efstathiosdimitriadis.rest.model;
+package ch.bbv.efstathiosdimitriadis.rest.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

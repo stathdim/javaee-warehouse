@@ -1,4 +1,4 @@
-package warehouse.ch.bbv.efstathiosdimitriadis.rest.resource;
+package ch.bbv.efstathiosdimitriadis.rest.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
