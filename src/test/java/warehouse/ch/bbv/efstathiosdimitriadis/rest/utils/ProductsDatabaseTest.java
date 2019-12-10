@@ -13,17 +13,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
+import ch.bbv.efstathiosdimitriadis.rest.dao.ProductDAO;
+import ch.bbv.efstathiosdimitriadis.rest.dao.ProductInMemoryDAO;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 
 public class ProductsDatabaseTest {
-	ProductsDatabase database;
+	ProductDAO database;
 
 	@BeforeEach
 	public void setup() {
-		database = new ProductsDatabase();
+		database = new ProductInMemoryDAO();
 	}
 
 	@Test

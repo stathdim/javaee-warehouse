@@ -5,15 +5,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
@@ -23,6 +19,8 @@ public class TestHibernacteConnection {
 	
 	@Test 
 	void testMsSql() {
+		// this is a single use password so there is no danger in hardcoding for now
+		// later I will secure the app-db connection
 		String connectionUrl = "jdbc:sqlserver://localhost;databaseName=warehouse;user=sa;password=sompa2019!";
 
         try {

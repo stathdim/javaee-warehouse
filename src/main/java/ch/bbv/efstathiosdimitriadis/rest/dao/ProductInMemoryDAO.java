@@ -1,4 +1,4 @@
-package ch.bbv.efstathiosdimitriadis.rest.database;
+package ch.bbv.efstathiosdimitriadis.rest.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +18,11 @@ import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 
 @Singleton
 @Lock(LockType.WRITE)
-public class ProductsDatabase {
+@InMemory
+public class ProductInMemoryDAO implements ProductDAO {
 	private Map<String, Product> products;
 
-	public ProductsDatabase() {
+	public ProductInMemoryDAO() {
 		products = new HashMap<>();
 		Product product = new Product("tire", ProductCategory.CAR_ACCESSORY, 2012);
 		products.put(product.getId(), product);
@@ -31,10 +32,12 @@ public class ProductsDatabase {
 		products.put(product.getId(), product);
 	}
 
+	@Override
 	public Optional<Product> getById(String id) {
 		return Optional.ofNullable(products.get(id));
 	}
 
+	@Override
 	public List<Product> getAll(ProductFilterBean filter) {
 		if (products.isEmpty())
 			return new ArrayList<Product>();
@@ -58,10 +61,12 @@ public class ProductsDatabase {
 		return filteredProducts.stream().filter(p::test).collect(Collectors.toList());
 	}
 
+	@Override
 	public Optional<Product> getByName(String name) {
 		return products.values().stream().filter(p -> name.equals(p.getName())).findFirst();
 	}
 
+	@Override
 	public Optional<Product> add(Product product) {
 		if (product == null)
 			return Optional.empty();
@@ -74,10 +79,12 @@ public class ProductsDatabase {
 		return Optional.of(products.get(product.getId()));
 	}
 
+	@Override
 	public Optional<Product> remove(String id) {
 		return Optional.ofNullable(products.remove(id));
 	}
 
+	@Override
 	public Optional<Product> update(String id, Product update) {
 		if (update == null)
 			return Optional.empty();

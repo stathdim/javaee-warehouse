@@ -12,23 +12,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
-import ch.bbv.efstathiosdimitriadis.rest.database.ProductsDatabase;
+import ch.bbv.efstathiosdimitriadis.rest.dao.InMemory;
+import ch.bbv.efstathiosdimitriadis.rest.dao.ProductDAO;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 
 @RequestScoped
 public class ProductService {
-	ProductsDatabase db;
+	@Inject
+	@InMemory
+	ProductDAO db;
 
 	public ProductService() {
 		// TODO Auto-generated constructor stub
-	}
-
-	@Inject
-	public ProductService(ProductsDatabase db) {
-		super();
-		this.db = db;
 	}
 
 	public Response getById(String id) {
