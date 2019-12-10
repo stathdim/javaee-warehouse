@@ -3,6 +3,11 @@ package ch.bbv.efstathiosdimitriadis.rest.model;
 import java.io.Serializable;
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,9 +16,11 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
 
+@Entity
 @ToString
 @EqualsAndHashCode
 @Value
+@Table(name="products")
 public class Product implements Serializable {
 	/**
 	 * 
@@ -21,14 +28,19 @@ public class Product implements Serializable {
 
 	private static final long serialVersionUID = -2106525495814801955L;
 	@Getter
+	@Column(name="product_name")
 	private String name;
 	@Getter
+	@Column(name="category")
 	private ProductCategory category;
 	@Getter
+	@Column(name="year")
 	private int year;
 	@Getter
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
+	@Id
+	@Column(name="product_id")
 	private String id;
 
 
