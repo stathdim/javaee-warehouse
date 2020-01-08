@@ -26,14 +26,10 @@ class ProductRelationalDAOTest {
 	static private EntityManager em;
 	private Product testingProduct;
 
-	@BeforeAll
-	static void globalSetup() {
-		productDAO = new ProductRelationalDAO();
-		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
-	}
-
 	@BeforeEach
 	void setup() {
+		productDAO = new ProductRelationalDAO();
+		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
 		testingProduct = new Product("Coffee Mug", ProductCategory.GLASSWARE, 2014);
 		em.getTransaction().begin();
 		em.persist(testingProduct);
@@ -48,7 +44,7 @@ class ProductRelationalDAOTest {
 		Product retrieved = em.find(Product.class, product.getId());
 
 		assertEquals(product, retrieved);
-		
+
 		em.getTransaction().begin();
 		em.remove(retrieved);
 		em.getTransaction().commit();
@@ -77,31 +73,52 @@ class ProductRelationalDAOTest {
 		List<Product> retrieved = productDAO.getAll(new ProductFilterBean());
 		assertTrue(retrieved.size() > 0);
 	}
-	
+
 	@Test
-	void getAllReturnsEmptyListIfNoProducts(TestReporter reporter) {
+	void getAllReturnsEmptyListIfNoProducts() {
 		em.getTransaction().begin();
 		em.remove(testingProduct);
 		em.getTransaction().commit();
 		List<Product> retrieved = productDAO.getAll(new ProductFilterBean());
 		assertEquals(0, retrieved.size());
 	}
-	
-	@Test @Disabled
+
+	@Test
+	@Disabled
 	void getAllSupportsFiltering() {
 		fail("not implemented yet");
 	}
-	
+
+	@Test
+	void removeProductWorks(TestReporter reporter) {
+		Product test = new Product("Fiat Punto", ProductCategory.CAR, 2015);
+		em.getTransaction().begin();
+		em.persist(test);
+		em.getTransaction().commit();
+
+		Optional<Product> removed = productDAO.remove(test.getId());
+		assertTrue(removed.isPresent());
+		assertEquals(removed.get().getId(), test.getId());
+		
+		em.getTransaction().begin();
+		em.flush();
+		em.clear();
+		Product found = em.find(Product.class, test.getId());
+		em.getTransaction().commit();
+		assertTrue(found == null);
+
+	}
+
 	@AfterEach
 	void teardown() {
-		em.getTransaction().begin();
-		em.remove(testingProduct);
-		em.getTransaction().commit();
-	}
-	
-	@AfterAll
-	static void globalTeardown() {
-		em.close();
+		try {
+			em.getTransaction().begin();
+			em.remove(testingProduct);
+			em.getTransaction().commit();
+			em.close();
+		} catch (Exception e) {
+		}
+
 	}
 
 }

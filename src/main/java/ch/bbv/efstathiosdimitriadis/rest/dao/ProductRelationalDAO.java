@@ -3,18 +3,28 @@ package ch.bbv.efstathiosdimitriadis.rest.dao;
 import java.util.List;
 import java.util.Optional;
 
+import javax.ejb.Lock;
+import javax.ejb.LockType;
+import javax.ejb.Singleton;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+
+import org.jboss.logging.Logger;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 
+@Singleton
+@Lock(LockType.WRITE)
+@RelationalDb
 public class ProductRelationalDAO implements ProductDAO {
+	private static Logger logger = Logger.getLogger(ProductDAO.class.getName());
+
 	private final EntityManager entityManager;
 
 	public ProductRelationalDAO() {
@@ -58,7 +68,7 @@ public class ProductRelationalDAO implements ProductDAO {
 			entityManager.persist(product);
 			entityManager.getTransaction().commit();
 		} catch (EntityExistsException e) {
-			e.printStackTrace();
+			handleExceptionDuringOngoingTransaction(e);
 			return Optional.empty();
 		}
 		return Optional.of(product);
@@ -66,14 +76,36 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public Optional<Product> remove(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Product forRemoval = entityManager.find(Product.class, id);
+			EntityTransaction transaction = entityManager.getTransaction();
+			transaction.begin();
+			if (forRemoval == null)
+				return Optional.empty();
+			entityManager.remove(forRemoval);
+			entityManager.flush();
+			transaction.commit();
+			return Optional.of(forRemoval);
+		} catch (IllegalArgumentException e) {
+			logger.error("User tried to remove product using illegal argument: " + id);
+			handleExceptionDuringOngoingTransaction(e);
+			return Optional.empty();
+		} catch (Exception e) {
+			handleExceptionDuringOngoingTransaction(e);
+			return Optional.empty();
+		}
 	}
 
 	@Override
 	public Optional<Product> update(String id, Product update) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private void handleExceptionDuringOngoingTransaction(Exception e) {
+		e.printStackTrace();
+		logger.error(e.getMessage());
+		entityManager.getTransaction().rollback();
 	}
 
 }
