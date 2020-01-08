@@ -26,10 +26,14 @@ class ProductRelationalDAOTest {
 	static private EntityManager em;
 	private Product testingProduct;
 
+	@BeforeAll
+	static void globalSetup() {
+		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
+	}
+
 	@BeforeEach
 	void setup() {
 		productDAO = new ProductRelationalDAO();
-		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
 		testingProduct = new Product("Coffee Mug", ProductCategory.GLASSWARE, 2014);
 		em.getTransaction().begin();
 		em.persist(testingProduct);
@@ -92,11 +96,10 @@ class ProductRelationalDAOTest {
 	@Test
 	void removeProductWorks(TestReporter reporter) {
 
-
 		Optional<Product> removed = productDAO.remove(testingProduct.getId());
 		assertTrue(removed.isPresent());
 		assertEquals(testingProduct.getId(), removed.get().getId());
-		
+
 		em.getTransaction().begin();
 		em.flush();
 		em.clear();
@@ -104,23 +107,23 @@ class ProductRelationalDAOTest {
 		em.getTransaction().commit();
 		assertTrue(found == null);
 	}
-	
-	@Test 
+
+	@Test
 	void removeProductsReturnEmptyOptionalIfProductNotInDB() {
 		Product test = new Product("Simple", ProductCategory.BOOK, 2080);
-		
+
 		Optional<Product> removed = productDAO.remove(test.getId());
 		assertFalse(removed.isPresent());
 	}
-	
+
 	@Test
 	void removeProductsReturnsEmptyOptionalIfProductDeleted() {
 		em.getTransaction().begin();
 		em.remove(testingProduct);
 		em.getTransaction().commit();
-		
+
 		Optional<Product> removedAgain = productDAO.remove(testingProduct.getId());
-		
+
 		assertFalse(removedAgain.isPresent());
 	}
 
@@ -130,9 +133,13 @@ class ProductRelationalDAOTest {
 			em.getTransaction().begin();
 			em.remove(testingProduct);
 			em.getTransaction().commit();
-			em.close();
 		} catch (Exception e) {
 		}
+	}
+
+	@AfterAll
+	static void globalTeardown() {
+		em.close();
 	}
 
 }
