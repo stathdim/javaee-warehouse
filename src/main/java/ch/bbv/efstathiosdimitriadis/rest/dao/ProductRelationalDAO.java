@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import org.jboss.logging.Logger;
 
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
+import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 
 @Singleton
@@ -52,34 +53,56 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public List<Product> getAll(ProductFilterBean filter) {
+		if (filter.getCategory() != null && filter.getYear() > 0)
+			return getFilteredByYearAndCategory(filter);
+		if (filter.getCategory() != null)
+			return getFilteredByCategory(filter);
+		if (filter.getYear() > 0)
+			return getFilteredByYear(filter);
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> criteria = builder.createQuery(Product.class);
 		criteria.from(Product.class);
 		List<Product> data = entityManager.createQuery(criteria).getResultList();
-		if (!data.isEmpty())
-			return filterProducts(filter, data);
 		return data;
 	}
 
-	private List<Product> filterProducts(ProductFilterBean filter, List<Product> products) {
-		List<Product> results = new ArrayList<Product>(products);
-		if (filter.getCategory() != null)
-			results = getAllProductsForCategory(filter.getCategory(), results);
-		if (filter.getYear() > 0)
-			results = getAllProductsForYear(filter.getYear(), results);
-		return results;
+	private List<Product> getFilteredByYearAndCategory(ProductFilterBean filter) {
+		try {
+			TypedQuery<Product> query = entityManager
+					.createQuery("SELECT p from Product p WHERE p.category = :category AND p.year = :year",
+							Product.class)
+					.setParameter("year", filter.getYear())
+					.setParameter("category", ProductCategory.valueOf(filter.getCategory()));
+			List<Product> result = query.getResultList();
+			return result;
+		} catch (NoResultException e) {
+			return new ArrayList<Product>();
+		}
 	}
 
-	private List<Product> getAllProductsForCategory(String category, List<Product> filteredProducts) {
-		return productFilter(p -> category.equals(p.getCategory().toString()), filteredProducts);
+	private List<Product> getFilteredByYear(ProductFilterBean filter) {
+		try {
+			TypedQuery<Product> query = entityManager
+					.createQuery("SELECT p from Product p WHERE p.year = :year", Product.class)
+					.setParameter("year", filter.getYear());
+			List<Product> result = query.getResultList();
+			return result;
+		} catch (NoResultException e) {
+			return new ArrayList<Product>();
+		}
 	}
 
-	private List<Product> getAllProductsForYear(int year, List<Product> filteredProducts) {
-		return productFilter(p -> year == p.getYear(), filteredProducts);
-	}
-
-	private List<Product> productFilter(Predicate<Product> p, List<Product> filteredProducts) {
-		return filteredProducts.stream().filter(p::test).collect(Collectors.toList());
+	private List<Product> getFilteredByCategory(ProductFilterBean filter) {
+		try {
+			TypedQuery<Product> query = entityManager
+					.createQuery("SELECT p from Product p WHERE p.category = :category", Product.class)
+					.setParameter("category", ProductCategory.valueOf(filter.getCategory()));
+			List<Product> result = query.getResultList();
+			return result;
+		} catch (NoResultException e) {
+			return new ArrayList<Product>();
+		}
 	}
 
 	@Override
