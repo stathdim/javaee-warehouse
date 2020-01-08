@@ -1,7 +1,10 @@
 package ch.bbv.efstathiosdimitriadis.rest.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.ejb.Lock;
 import javax.ejb.LockType;
@@ -49,25 +52,48 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public List<Product> getAll(ProductFilterBean filter) {
-		// TODO: Implement filtering
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> criteria = builder.createQuery(Product.class);
 		criteria.from(Product.class);
 		List<Product> data = entityManager.createQuery(criteria).getResultList();
+		if (!data.isEmpty())
+			return filterProducts(filter, data);
 		return data;
+	}
+
+	private List<Product> filterProducts(ProductFilterBean filter, List<Product> products) {
+		List<Product> results = new ArrayList<Product>(products);
+		if (filter.getCategory() != null)
+			results = getAllProductsForCategory(filter.getCategory(), results);
+		if (filter.getYear() > 0)
+			results = getAllProductsForYear(filter.getYear(), results);
+		return results;
+	}
+
+	private List<Product> getAllProductsForCategory(String category, List<Product> filteredProducts) {
+		return productFilter(p -> category.equals(p.getCategory().toString()), filteredProducts);
+	}
+
+	private List<Product> getAllProductsForYear(int year, List<Product> filteredProducts) {
+		return productFilter(p -> year == p.getYear(), filteredProducts);
+	}
+
+	private List<Product> productFilter(Predicate<Product> p, List<Product> filteredProducts) {
+		return filteredProducts.stream().filter(p::test).collect(Collectors.toList());
 	}
 
 	@Override
 	public Optional<Product> getByName(String name) {
 		try {
-			TypedQuery<Product> query = entityManager.createQuery("SELECT p from Product p WHERE p.name = :name", Product.class)
+			TypedQuery<Product> query = entityManager
+					.createQuery("SELECT p from Product p WHERE p.name = :name", Product.class)
 					.setParameter("name", name);
 			Product result = query.getSingleResult();
 			return Optional.ofNullable(result);
 		} catch (NoResultException e) {
 			return Optional.empty();
 		}
-		
+
 	}
 
 	@Override
@@ -108,27 +134,29 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public Optional<Product> update(String id, Product update) {
-		if (update == null) return Optional.empty();
+		if (update == null)
+			return Optional.empty();
 		try {
 			EntityTransaction transaction = entityManager.getTransaction();
 			transaction.begin();
 			Product original = entityManager.find(Product.class, id);
-			
-			if (original == null) return Optional.empty();
+
+			if (original == null)
+				return Optional.empty();
 			entityManager.remove(original);
 			entityManager.persist(update);
 			transaction.commit();
 			return Optional.of(update);
-			
+
 		} catch (Exception e) {
 			logger.error("Update product " + id + " failed with error " + e.getMessage());
 			e.printStackTrace();
 			entityManager.getTransaction().rollback();
 			return Optional.empty();
 		}
-		
+
 	}
-	
+
 	private void handleExceptionDuringOngoingTransaction(Exception e) {
 		e.printStackTrace();
 		logger.error(e.getMessage());

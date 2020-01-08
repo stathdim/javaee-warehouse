@@ -31,9 +31,7 @@ class ProductRelationalDAOTest {
 		productDAO = new ProductRelationalDAO();
 		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
 		testingProduct = new Product("Coffee Mug", ProductCategory.GLASSWARE, 2014);
-		em.getTransaction().begin();
-		em.persist(testingProduct);
-		em.getTransaction().commit();
+		persistTestingProduct(testingProduct);
 	}
 
 	@Test
@@ -45,9 +43,7 @@ class ProductRelationalDAOTest {
 
 		assertEquals(product, retrieved);
 
-		em.getTransaction().begin();
-		em.remove(retrieved);
-		em.getTransaction().commit();
+		deleteTestingProduct(retrieved);
 	}
 
 	@Test
@@ -76,22 +72,80 @@ class ProductRelationalDAOTest {
 
 	@Test
 	void getAllReturnsEmptyListIfNoProducts() {
-		em.getTransaction().begin();
-		em.remove(testingProduct);
-		em.getTransaction().commit();
+		deleteTestingProduct(testingProduct);
 		List<Product> retrieved = productDAO.getAll(new ProductFilterBean());
 		assertEquals(0, retrieved.size());
 	}
 
 	@Test
-	@Disabled
-	void getAllSupportsFiltering() {
-		fail("not implemented yet");
+	void getAllSupportsFilterByCategory() {
+		Product filteredOne = new Product("1", ProductCategory.CLOTHES, 1000);
+		Product filteredTwo = new Product("2", ProductCategory.FOOD, 2000);
+		persistTestingProduct(filteredOne);
+		persistTestingProduct(filteredTwo);
+		
+		ProductFilterBean filter = new ProductFilterBean();
+		filter.setCategory(ProductCategory.GLASSWARE.toString());
+		
+		List<Product> retrieved = productDAO.getAll(filter);
+		assertEquals(1, retrieved.size());
+		deleteTestingProduct(filteredOne);
+		deleteTestingProduct(filteredTwo);
+	}
+	
+	@Test
+	void getAllSupportsFilterByYear() {
+		Product filteredOne = new Product("1", ProductCategory.CLOTHES, 1000);
+		Product filteredTwo = new Product("2", ProductCategory.FOOD, 2000);
+		Product filteredThree = new Product("3", ProductCategory.TABLET, 1000);
+		persistTestingProduct(filteredOne);
+		persistTestingProduct(filteredTwo);
+		persistTestingProduct(filteredThree);
+		
+		ProductFilterBean filter = new ProductFilterBean();
+		filter.setYear(1000);
+		
+		List<Product> retrieved = productDAO.getAll(filter);
+		assertEquals(2, retrieved.size());
+		deleteTestingProduct(filteredOne);
+		deleteTestingProduct(filteredTwo);
+		deleteTestingProduct(filteredThree);
+	}
+	
+	@Test
+	void getAllSupportsFilterByYearAndCategory() {
+		Product filteredOne = new Product("1", ProductCategory.CLOTHES, 1000);
+		Product filteredTwo = new Product("2", ProductCategory.TABLET, 2000);
+		Product filteredThree = new Product("3", ProductCategory.TABLET, 1000);
+		Product filteredFour= new Product("4", ProductCategory.TABLET, 1000);
+		persistTestingProduct(filteredOne);
+		persistTestingProduct(filteredTwo);
+		persistTestingProduct(filteredThree);
+		persistTestingProduct(filteredFour);
+		
+		ProductFilterBean filter = new ProductFilterBean();
+		filter.setYear(1000);
+		filter.setCategory(ProductCategory.TABLET.toString());
+		
+		List<Product> retrieved = productDAO.getAll(filter);
+		assertEquals(2, retrieved.size());
+		deleteTestingProduct(filteredOne);
+		deleteTestingProduct(filteredTwo);
+		deleteTestingProduct(filteredThree);
+		deleteTestingProduct(filteredFour);
+	}
+	
+	@Test
+	void getAllReturnsEmptyListIfNothingMatchesFilter(TestReporter reporter) {
+		ProductFilterBean filter = new ProductFilterBean();
+		filter.setYear(1);
+		List<Product> retrieved = productDAO.getAll(filter);
+		assertTrue(retrieved.isEmpty());
 	}
 
 	@Test
 	void removeProductWorks(TestReporter reporter) {
-
+		
 		Optional<Product> removed = productDAO.remove(testingProduct.getId());
 		assertTrue(removed.isPresent());
 		assertEquals(testingProduct.getId(), removed.get().getId());
@@ -114,9 +168,7 @@ class ProductRelationalDAOTest {
 
 	@Test
 	void removeProductsReturnsEmptyOptionalIfProductDeleted() {
-		em.getTransaction().begin();
-		em.remove(testingProduct);
-		em.getTransaction().commit();
+		deleteTestingProduct(testingProduct);
 
 		Optional<Product> removedAgain = productDAO.remove(testingProduct.getId());
 
@@ -147,16 +199,48 @@ class ProductRelationalDAOTest {
 		Optional<Product> updated = productDAO.update(notPersisted.getId(), notPersistedUpdate);
 		assertFalse(updated.isPresent());
 	}
+	
+	@Test
+	void getByNameWorks() {
+		Optional<Product> retrieved = productDAO.getByName(testingProduct.getName());
+		
+		assertTrue(retrieved.isPresent());
+		assertEquals(testingProduct, retrieved.get());
+	}
+	
+	@Test
+	void getByNameReturnsEmptyOptionalIfNotFound() {
+		String random = UUID.randomUUID().toString();
+		Optional<Product> retrieved = productDAO.getByName(random);
+		
+		assertFalse(retrieved.isPresent());
+	}
+	
+	@Test
+	void getByNameReturnsEmptyOptionalIfNullName() {
+		Optional<Product> retrieved = productDAO.getByName(null);
+		
+		assertFalse(retrieved.isPresent());
+	}
 
 	@AfterEach
 	void teardown() {
 		try {
-			em.getTransaction().begin();
-			em.remove(testingProduct);
-			em.getTransaction().commit();
+			deleteTestingProduct(testingProduct);
 			em.close();
 		} catch (Exception e) {
 		}
 	}
-
+	
+	private void persistTestingProduct(Product toPersist) {
+		em.getTransaction().begin();
+		em.persist(toPersist);
+		em.getTransaction().commit();
+	}
+	
+	private void deleteTestingProduct(Product toDelete) {
+		em.getTransaction().begin();
+		em.remove(toDelete);
+		em.getTransaction().commit();
+	}
 }
