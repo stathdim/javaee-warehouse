@@ -98,8 +98,25 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public Optional<Product> update(String id, Product update) {
-		// TODO Auto-generated method stub
-		return null;
+		if (update == null) return Optional.empty();
+		try {
+			EntityTransaction transaction = entityManager.getTransaction();
+			transaction.begin();
+			Product original = entityManager.find(Product.class, id);
+			
+			if (original == null) return Optional.empty();
+			entityManager.remove(original);
+			entityManager.persist(update);
+			transaction.commit();
+			return Optional.of(update);
+			
+		} catch (Exception e) {
+			logger.error("Update product " + id + " failed with error " + e.getMessage());
+			e.printStackTrace();
+			entityManager.getTransaction().rollback();
+			return Optional.empty();
+		}
+		
 	}
 	
 	private void handleExceptionDuringOngoingTransaction(Exception e) {

@@ -26,14 +26,10 @@ class ProductRelationalDAOTest {
 	static private EntityManager em;
 	private Product testingProduct;
 
-	@BeforeAll
-	static void globalSetup() {
-		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
-	}
-
 	@BeforeEach
 	void setup() {
 		productDAO = new ProductRelationalDAO();
+		em = Persistence.createEntityManagerFactory("warehouse-persistence").createEntityManager();
 		testingProduct = new Product("Coffee Mug", ProductCategory.GLASSWARE, 2014);
 		em.getTransaction().begin();
 		em.persist(testingProduct);
@@ -127,19 +123,40 @@ class ProductRelationalDAOTest {
 		assertFalse(removedAgain.isPresent());
 	}
 
+	@Test
+	void updateProductWorks() {
+		Product update = testingProduct.modifyYear(7000);
+		Optional<Product> updated = productDAO.update(testingProduct.getId(), update);
+		assertTrue(updated.isPresent());
+		assertEquals(testingProduct.getCategory(), updated.get().getCategory());
+		assertEquals(testingProduct.getName(), updated.get().getName());
+		assertNotEquals(testingProduct.getYear(), updated.get().getYear());
+		assertEquals(update.getYear(), updated.get().getYear());
+	}
+	
+	@Test
+	void updateReturnsEmptyOptionalIfNullPassed() {
+		Optional<Product> updated = productDAO.update(testingProduct.getId(), null);
+		assertFalse(updated.isPresent());
+	}
+	
+	@Test
+	void updateReturnsEmptyOptionalIfProductNotInDB() {
+		Product notPersisted = new Product("Simple", ProductCategory.BOOK, 2080);
+		Product notPersistedUpdate = notPersisted.modifyCategory(ProductCategory.STATIONERY);
+		Optional<Product> updated = productDAO.update(notPersisted.getId(), notPersistedUpdate);
+		assertFalse(updated.isPresent());
+	}
+
 	@AfterEach
 	void teardown() {
 		try {
 			em.getTransaction().begin();
 			em.remove(testingProduct);
 			em.getTransaction().commit();
+			em.close();
 		} catch (Exception e) {
 		}
-	}
-
-	@AfterAll
-	static void globalTeardown() {
-		em.close();
 	}
 
 }
