@@ -91,22 +91,37 @@ class ProductRelationalDAOTest {
 
 	@Test
 	void removeProductWorks(TestReporter reporter) {
-		Product test = new Product("Fiat Punto", ProductCategory.CAR, 2015);
-		em.getTransaction().begin();
-		em.persist(test);
-		em.getTransaction().commit();
 
-		Optional<Product> removed = productDAO.remove(test.getId());
+
+		Optional<Product> removed = productDAO.remove(testingProduct.getId());
 		assertTrue(removed.isPresent());
-		assertEquals(removed.get().getId(), test.getId());
+		assertEquals(testingProduct.getId(), removed.get().getId());
 		
 		em.getTransaction().begin();
 		em.flush();
 		em.clear();
-		Product found = em.find(Product.class, test.getId());
+		Product found = em.find(Product.class, testingProduct.getId());
 		em.getTransaction().commit();
 		assertTrue(found == null);
-
+	}
+	
+	@Test 
+	void removeProductsReturnEmptyOptionalIfProductNotInDB() {
+		Product test = new Product("Simple", ProductCategory.BOOK, 2080);
+		
+		Optional<Product> removed = productDAO.remove(test.getId());
+		assertFalse(removed.isPresent());
+	}
+	
+	@Test
+	void removeProductsReturnsEmptyOptionalIfProductDeleted() {
+		em.getTransaction().begin();
+		em.remove(testingProduct);
+		em.getTransaction().commit();
+		
+		Optional<Product> removedAgain = productDAO.remove(testingProduct.getId());
+		
+		assertFalse(removedAgain.isPresent());
 	}
 
 	@AfterEach
@@ -118,7 +133,6 @@ class ProductRelationalDAOTest {
 			em.close();
 		} catch (Exception e) {
 		}
-
 	}
 
 }
