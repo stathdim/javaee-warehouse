@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.bbv.efstathiosdimitriadis.rest.dao.ProductInMemoryDAO;
+import ch.bbv.efstathiosdimitriadis.rest.dao.ProductRelationalDAO;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.model.ProductCategory;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
@@ -40,7 +41,7 @@ public class ProductServiceTest {
 
 	String testingUUID;
 	@Mock 
-	ProductInMemoryDAO mockDb;
+	ProductRelationalDAO mockDb;
 
 	@InjectMocks
 	ProductService productService;
