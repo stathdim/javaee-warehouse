@@ -10,9 +10,12 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.jboss.logging.Logger;
 
@@ -56,8 +59,15 @@ public class ProductRelationalDAO implements ProductDAO {
 
 	@Override
 	public Optional<Product> getByName(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			TypedQuery<Product> query = entityManager.createQuery("SELECT p from Product p WHERE p.name = :name", Product.class)
+					.setParameter("name", name);
+			Product result = query.getSingleResult();
+			return Optional.ofNullable(result);
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
+		
 	}
 
 	@Override

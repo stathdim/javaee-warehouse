@@ -14,6 +14,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import ch.bbv.efstathiosdimitriadis.rest.dao.InMemory;
 import ch.bbv.efstathiosdimitriadis.rest.dao.ProductDAO;
+import ch.bbv.efstathiosdimitriadis.rest.dao.RelationalDb;
 import ch.bbv.efstathiosdimitriadis.rest.model.Product;
 import ch.bbv.efstathiosdimitriadis.rest.resource.ProductResource;
 import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
@@ -21,7 +22,7 @@ import ch.bbv.efstathiosdimitriadis.rest.resource.beans.ProductFilterBean;
 @RequestScoped
 public class ProductService {
 	@Inject
-	@InMemory
+	@RelationalDb
 	ProductDAO db;
 
 	public ProductService() {
