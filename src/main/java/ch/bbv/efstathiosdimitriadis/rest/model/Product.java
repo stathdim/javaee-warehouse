@@ -1,6 +1,7 @@
 package ch.bbv.efstathiosdimitriadis.rest.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -13,15 +14,8 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.Value;
 
 @Entity
-@ToString
-@EqualsAndHashCode
 @Table(name = "products")
 public class Product implements Serializable {
 	/**
@@ -29,20 +23,12 @@ public class Product implements Serializable {
 	 */
 
 	private static final long serialVersionUID = -2106525495814801955L;
-	@Getter
-	@Setter
 	@Column(name = "product_name")
 	private String name;
-	@Getter
-	@Setter
 	@Column(name = "category")
 	private ProductCategory category;
-	@Getter
-	@Setter
 	@Column(name = "year")
 	private int year;
-	@Getter
-	@EqualsAndHashCode.Exclude
 	@Id
 	@Column(name = "product_id")
 	private String id;
@@ -72,4 +58,60 @@ public class Product implements Serializable {
 		return new Product(name, category, newYear);
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ProductCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(ProductCategory category) {
+		this.category = category;
+	}
+
+	public int getYear() {
+		return year;
+	}
+
+	public void setYear(int year) {
+		this.year = year;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Product product = (Product) o;
+		return year == product.year &&
+				name.equals(product.name) &&
+				category == product.category;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, category, year);
+	}
+
+	@Override
+	public String toString() {
+		return "Product{" +
+				"name='" + name + '\'' +
+				", category=" + category +
+				", year=" + year +
+				", id='" + id + '\'' +
+				'}';
+	}
 }
